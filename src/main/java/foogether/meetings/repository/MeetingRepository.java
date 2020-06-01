@@ -30,10 +30,10 @@ public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
 
 
     // keyword 조회
-    List<Meeting> findAllByActiveAndStatusAndTitleContainingWith(Active active, StatusInfo status, String keyword);
+    List<Meeting> findAllByActiveAndStatusAndTitleContaining(Active active, StatusInfo status, String keyword);
     // Containing : %keyword%
     List<Meeting> findAllByActiveAndTitleContaining(Active active, String keyword);
-//    // End
+//    // End : %keyword
 //    List<Meeting> findAllByActiveAndTitleEndsWith(Active active, String keyword);
 
 

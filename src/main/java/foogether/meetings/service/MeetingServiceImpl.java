@@ -81,10 +81,10 @@ public class MeetingServiceImpl implements MeetingService {
         List<Meeting> meetingList;
 
         if(sort.equals("recruiting")) {
-            meetingList = meetingRepository.findAllByActiveAndStatusAndTitleContainingWith(Active.ACTIVE, StatusInfo.RECRUITING, keyword);
+            meetingList = meetingRepository.findAllByActiveAndStatusAndTitleContaining(Active.ACTIVE, StatusInfo.RECRUITING, keyword);
         }
         else if(sort.equals("complete")){
-            meetingList = meetingRepository.findAllByActiveAndStatusAndTitleContainingWith(Active.ACTIVE, StatusInfo.COMPLETE, keyword);
+            meetingList = meetingRepository.findAllByActiveAndStatusAndTitleContaining(Active.ACTIVE, StatusInfo.COMPLETE, keyword);
         }
         else {
             meetingList = meetingRepository.findAllByActiveAndTitleContaining(Active.ACTIVE, keyword);
