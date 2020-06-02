@@ -60,6 +60,9 @@ public class MeetingServiceImpl implements MeetingService {
             // meetingList 중 객체 하나를 MeetingDto의 entity->dto 하는 생성자함수로 만들어서 List로 만들어라
             meetingList = meetingRepository.findAllByActiveAndStatus(Active.ACTIVE, StatusInfo.COMPLETE);
         }
+        else if(sort.equals("fail")){
+            meetingList = meetingRepository.findAllByActiveAndStatus(Active.ACTIVE, StatusInfo.FAIL);
+        }
         else if(sort.equals("all")){
             // meetingList 중 객체 하나를 MeetingDto의 entity->dto 하는 생성자함수로 만들어서 List로 만들어라
             meetingList = meetingRepository.findAllByActive(Active.ACTIVE);
@@ -101,6 +104,9 @@ public class MeetingServiceImpl implements MeetingService {
                             + "," + address.getSecondAddr());
                     meetingList = meetingRepository.findAllByActiveAndAddressAndStatus(Active.ACTIVE, address, StatusInfo.COMPLETE);
                 }
+                else if(sort.equals("fail")){
+                    meetingList = meetingRepository.findAllByActiveAndAddressAndStatus(Active.ACTIVE, address, StatusInfo.FAIL);
+                }
                 else if(sort.equals("all")){
                     log.info("all alladdress >>> " + address.getFirstAddr() + "," + address.getSecondAddr()
                             + "," + address.getSecondAddr());
@@ -118,6 +124,9 @@ public class MeetingServiceImpl implements MeetingService {
                     log.info("complete first,second >>> " + address.getFirstAddr() + "," + address.getSecondAddr());
                     meetingList = meetingRepository.findAllByFirstAndSecondAddrWithStatus(
                             "ACTIVE", address.getFirstAddr(), address.getSecondAddr(), "COMPLETE");
+                } else if(sort.equals("fail")) {
+                    meetingList = meetingRepository.findAllByFirstAndSecondAddrWithStatus(
+                            "ACTIVE", address.getFirstAddr(), address.getSecondAddr(), "FAIL");
                 }
                 else if(sort.equals("all")){
                     log.info("all first,second >>> " + address.getFirstAddr() + "," + address.getSecondAddr());
@@ -133,7 +142,10 @@ public class MeetingServiceImpl implements MeetingService {
                 } else if(sort.equals("complete")){
                     log.info("complete firstAddr >>> " + address.getFirstAddr());
                     meetingList = meetingRepository.findAllByFirstAddrWithStatus("ACTIVE", address.getFirstAddr(), "COMPLETE");
-                } else if(sort.equals("all")){
+                } else if(sort.equals("fail")) {
+                    meetingList = meetingRepository.findAllByFirstAddrWithStatus("ACTIVE", address.getFirstAddr(), "FAIL");
+                }
+                else if(sort.equals("all")){
                     log.info("all firstAddr >>> " + address.getFirstAddr());
                     meetingList = meetingRepository.findAllByFirstAddrWithoutStatus("ACTIVE", address.getFirstAddr());
                 } else {

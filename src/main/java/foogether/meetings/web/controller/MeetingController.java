@@ -69,7 +69,7 @@ public class MeetingController {
 //        }
 //    }
 
-    
+
 
     @GetMapping("/{offset}/{limit}/sort/{sort}")
     public ResponseEntity findAll(@RequestHeader(value = "Authorization", required = false) final String header,
