@@ -16,7 +16,9 @@ public class ResponseMessage {
     /**
      * Meetings
      */
-    public static final String NOT_FOUND_LIST = "조회 정보를 찾아올 수 없습니다.";
+    public static final String NOT_FOUND_LIST = "조회 정보를 찾을 수 없습니다.";
+    public static final String READ_ALL_BUT_ZERO = "작성된 게시글이 없습니다.";
+    public static final String WRONG_STATUS = "카테고리 설정이 잘못되었습니다.";
     public static final String READ_ALL_CONTENTS = "전체 게시판 조회 성공";
     public static final String READ_CONTENT = "상세 게시판 조회 성공";
 

@@ -22,4 +22,13 @@ public class Address {
         this.thirdAddr = thirdAddr;
     }
 
+    public Address(String firstAddr, String secondAddr){
+        this.firstAddr = firstAddr;
+        this.secondAddr = secondAddr;
+    }
+
+    public Address(String firstAddr){
+        this.firstAddr = firstAddr;
+    }
+
 }

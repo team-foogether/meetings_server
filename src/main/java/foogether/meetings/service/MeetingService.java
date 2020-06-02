@@ -20,4 +20,7 @@ public interface MeetingService {
 
     // 키워드로 조회
     DefaultResponse<List<MeetingDto>> findAllByKeyword(String sort, String keyword) throws Exception;
+
+    // 특정 게시물 조회
+    DefaultResponse<MeetingDto> findByIdx(int meetingIdx) throws Exception;
 }

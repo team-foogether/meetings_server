@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.catalina.User;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -45,6 +46,9 @@ public class MeetingDto {
             isLike = like;
         }
 
+
+
+
     // Repository에서 entity -> dto로 바꿔주는 작업
     public MeetingDto(Meeting entity) {
         this.idx = entity.getIdx();
@@ -63,22 +67,6 @@ public class MeetingDto {
 
     // dto에서 Entity로 바꿔주는 작업
         // 먼저 Build로 선언할 것들 선언
-//        @Builder
-//        public MeetingDto(int idx, int user_idx, String imgUrl, DateInfo endDate, String title, String content,
-//                          Address address, StatusInfo status, int manMax, int femMax, Active active) {
-//            this.idx = idx;
-//            this.user_idx = user_idx;
-//            this.imgUrl = imgUrl;
-//            this.endDate = endDate;
-//            this.title = title;
-//            this.content = content;
-//            this.address = address;
-//            this.status = status;
-//            this.manMax = manMax;
-//            this.femMax = femMax;
-//            this.active = active;
-//        }
-
         // Meeting Entity 지정
         public Meeting toEntity() {
             return Meeting.builder()
