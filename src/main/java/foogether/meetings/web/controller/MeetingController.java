@@ -6,6 +6,7 @@ import foogether.meetings.service.MeetingService;
 import foogether.meetings.utils.ResponseMessage;
 import foogether.meetings.web.dto.DefaultResponse;
 import foogether.meetings.web.dto.MeetingDto;
+import foogether.meetings.web.dto.OwnerDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
@@ -13,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.util.List;
 import java.util.Optional;
@@ -22,55 +24,39 @@ import java.util.Optional;
 @RestController
 public class MeetingController {
 //    private static final DefaultResponse UNAUTHORIZED_RES = new DefaultResponse("error", ResponseMessage.UNAUTHORIZED);
-
-    @Autowired
-    MeetingService meetingService;
-
     // TODO : Token 적용
     // @RequestHeader(value = "Authorization", required = false) final String header
     // ResponseEntity : Status 코드 상태변수와 body로 이루어져 있음
-    // 모이자 전체 리스트 가져오기
-//    @GetMapping("/search")
-//    public ResponseEntity findAll(@RequestHeader(value = "Authorization", required = false) final String header,
-//                                  @RequestParam(value = "limit", defaultValue = "0", required = false) int limit,
-//                                  @RequestParam(value = "offset", defaultValue = "0", required = false) int offset,
-//                                  @RequestParam(value = "sort", defaultValue = "", required = false) String sort,
-//                                  @RequestParam(value = "keyword",  defaultValue = "", required = false) String keyword,
-//                                  @RequestParam(value = "firstAddr", defaultValue = "", required = false) String firstAddr,
-//                                  @RequestParam(value = "secondAddr", defaultValue = "", required = false) String secondAddr,
-//                                  @RequestParam(value = "thirdAddr", defaultValue = "", required = false) String thirdAddr
-//                                  ) {
-//
-//        DefaultResponse<List<MeetingDto>> defaultResponse;
-//        try {
-//            if(firstAddr.equals("")){ // 주소 검색 아님
-//                if(keyword.equals("")){ // keyword 검색 아님
-//                    // 검색해온 meetingList == defaultResponse
-//                    defaultResponse =
-//                            meetingService.findAll(sort);
-//                }
-//                else {  // keyword 검색
-//                    defaultResponse =
-//                            meetingService.findAllByKeyword(sort, keyword);
-//                }
-//            }
-//            else {  // 주소 검색
-//                Address address = new Address(firstAddr, secondAddr, thirdAddr);
-//                defaultResponse =
-//                        meetingService.findAllByAddress(sort, address);
-//            }
-//
-//
-//            return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
-//
-//        } catch (Exception e) {
-//            defaultResponse = DefaultResponse.res("fail", ResponseMessage.INTERNAL_SERVER_ERROR);
-//            return new ResponseEntity<>(defaultResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+    @Autowired
+    MeetingService meetingService;
+
+    /* 상세 조회 부분 진행중 */
+    // isLike, auth, Owner 받아오기
+    // TODO: 다른 페이지에서 실제로 Owner 받아오는 부분 구현해야함
+    @GetMapping("/{meetingIdx}")
+    public ResponseEntity findAllByIdx(@RequestHeader(value = "Authorization", required = false) final String header,
+                                       @PathVariable("meetingIdx") int meetingIdx){
+
+        DefaultResponse<MeetingDto> defaultResponse;
+
+        try{
+            // TODO : TOKEN 통해 Owner 정보 가져오기
+            OwnerDto ownerDto = new OwnerDto(5, "owner's profileImg", "닉네임");
+            // 상세 조회 값 가져오기
+            defaultResponse = meetingService.findByIdx(meetingIdx, ownerDto);
 
 
+            return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
 
+        }catch (Exception e){
+            defaultResponse = DefaultResponse.res("fail", ResponseMessage.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(defaultResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    /* 전체 조회 부분 완료 */
+    //조건 없이 전체 조회
     @GetMapping("/{offset}/{limit}/sort/{sort}")
     public ResponseEntity findAll(@RequestHeader(value = "Authorization", required = false) final String header,
                                   @PathVariable("sort") String sort) {
@@ -85,6 +71,7 @@ public class MeetingController {
         }
     }
 
+    // 키워드로 전체 조회
     @GetMapping("/{offset}/{limit}/sort/{sort}/keyword/{keyword}")
     public ResponseEntity findAllByKeyword(@RequestHeader(value = "Authorization", required = false) final String header,
                                   @PathVariable("limit") int limit,
@@ -104,6 +91,7 @@ public class MeetingController {
         }
     }
 
+    // 위치 정보로 전체 조회
     @GetMapping("/{offset}/{limit}/sort/{sort}/firstAddr/{firstAddr}/secondAddr/{secondAddr}/thirdAddr/{thirdAddr}")
     public ResponseEntity findAllByKeyword(@RequestHeader(value = "Authorization", required = false) final String header,
                                            @PathVariable("limit") int limit,
@@ -127,8 +115,7 @@ public class MeetingController {
             } else {
                 address = new Address(firstAddr, secondAddr, thirdAddr);
             }
-
-
+            
             log.info("controller sort >>> " + sort);
             log.info("contoller firstAddr >>> " + address.getFirstAddr());
             log.info("contoller secondAddr >>> " + address.getSecondAddr());

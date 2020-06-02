@@ -17,14 +17,16 @@ import java.util.List;
 @Repository
 public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
 
+    /* 상세 조회 */
+    // 특정 게시물 조회
+    Meeting findByIdx(int meetingIdx);
+
+    /* 기본 전체 조회 */
     List<Meeting> findAllByActive(Active active);
     List<Meeting> findAllByActiveAndStatus(Active active, StatusInfo status);
 
 
-    // 주소값 조회
-//    List<Meeting> findAllByActiveAndAddressAndStatus(Active active, Address address, StatusInfo status);
-//    List<Meeting> findAllByActiveAndAddress(Active active, Address address);
-
+    /* 주소값 조회 */
     // 첫번째 주소만 status 구별
     @Query("SELECT m FROM Meeting m WHERE first_addr= :firstAddr and meeting_active = :active and meeting_status = :status")
     List<Meeting> findAllByFirstAddrWithStatus(@Param("active") String active, @Param("firstAddr") String firstAddr, @Param("status") String status);
@@ -48,18 +50,8 @@ public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
     // status = all
     List<Meeting> findAllByActiveAndAddress(Active active, Address address);
 
-//    // 첫번째 주소로 조회
-//    List<Meeting> findAllByActiveAndFirstAddrAndStatus(Active active, String firstAddr, StatusInfo status);
-//    // 두번째 주소로 조회
-//    List<Meeting> findAllByActiveAndFirstAddrAndSecondAddrAndStatus(Active active, String firstAddr, String secondAddr, StatusInfo status);
-//    // 전체 주소 중 Status = all
-//    List<Meeting> findAllByActiveAndAddress(Active active, Address address);
 
-
-    // first, second, third 중에 값이 하나라도 안들어오면 검색이 안됨 -> 부분 검색 있는지 확인
-
-
-
+    /* keyword 조회 */
     // keyword 조회
     List<Meeting> findAllByActiveAndStatusAndTitleContaining(Active active, StatusInfo status, String keyword);
     // Containing : %keyword%
@@ -67,9 +59,6 @@ public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
 //    // End : %keyword
 //    List<Meeting> findAllByActiveAndTitleEndsWith(Active active, String keyword);
 
-
-    // 특정 게시물 조회
-    Meeting findByIdx(int meetingIdx);
 
 
 

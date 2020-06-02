@@ -3,11 +3,14 @@ package foogether.meetings.service;
 import foogether.meetings.domain.Active;
 import foogether.meetings.domain.Address;
 import foogether.meetings.domain.Entity.Meeting;
+import foogether.meetings.domain.Entity.MeetingLike;
 import foogether.meetings.domain.StatusInfo;
+import foogether.meetings.repository.MeetingLikeRepository;
 import foogether.meetings.repository.MeetingRepository;
 import foogether.meetings.utils.ResponseMessage;
 import foogether.meetings.web.dto.DefaultResponse;
 import foogether.meetings.web.dto.MeetingDto;
+import foogether.meetings.web.dto.OwnerDto;
 import jdk.net.SocketFlow;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,19 +30,39 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Autowired
     private final MeetingRepository meetingRepository;
+    @Autowired
+    private final MeetingLikeRepository meetingLikeRepository;
 
 
-    /* 모이자 상세 페이지 */
+    /* 모이자 상세 페이지 - 진행중 */
     // 특정 게시물 조회
     @Override
-    public DefaultResponse<MeetingDto> findByIdx(int meetingIdx) throws Exception {
+    public DefaultResponse<MeetingDto> findByIdx(int meetingIdx, OwnerDto ownerDto) throws Exception {
         try {
             Meeting meeting = meetingRepository.findByIdx(meetingIdx);
-            if (meeting == null || meeting.getActive().equals(Active.UNACTIVE)) { // meeting 정보가 없으면
+            // meeting 정보가 없거나 UNACTIVE 하면
+            if (meeting == null || meeting.getActive().equals(Active.UNACTIVE)) {
                 return DefaultResponse.res("fail", ResponseMessage.NOT_FOUND_LIST);
             }
 
             MeetingDto meetingDto = new MeetingDto(meeting);
+
+            log.info("meetingIdx >>> " + meetingDto.getIdx());
+            log.info("ownerIdx of meetingIdx >>> " + meetingDto.getOwnerIdx());
+            log.info("ownerIdx >>> " + ownerDto.getOwnerIdx());
+
+            // owner인지 확인
+            if(ownerDto.getOwnerIdx() == meetingDto.getOwnerIdx()){
+                meetingDto.setAuth(true);
+            }
+
+            // like했는지 확인
+            MeetingLike meetingLike = meetingLikeRepository.findByMeetingIdxAndOwnerIdx(meetingIdx, ownerDto.getOwnerIdx());
+
+            if(meetingLike != null){
+                meetingDto.setLike(true);
+            }
+
             return DefaultResponse.res("success", ResponseMessage.READ_CONTENT,
                     meetingDto);
         } catch (Exception e) {
@@ -47,11 +70,12 @@ public class MeetingServiceImpl implements MeetingService {
         }
     }
 
-    /* 모이자 메인 페이지 */
+    /* 모이자 메인 페이지 - 완료 */
     // 게시글 전체 조회(ACTIVE 인것만)
     @Override
     public DefaultResponse<List<MeetingDto>> findAll(String sort) throws Exception {
         List<Meeting> meetingList;
+
         if(sort.equals("recruiting")) {
             // meetingList 중 객체 하나를 MeetingDto의 entity->dto 하는 생성자함수로 만들어서 List로 만들어라
             meetingList = meetingRepository.findAllByActiveAndStatus(Active.ACTIVE, StatusInfo.RECRUITING);

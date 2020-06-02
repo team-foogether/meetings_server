@@ -1,9 +1,12 @@
 package foogether.meetings.domain.Entity;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.Collection;
 
 @Entity
@@ -17,12 +20,20 @@ public class MeetingLike {
     private int idx;
 
     @Column(name="owner_idx")
-    private int owner_idx;
+    private int ownerIdx;
 
     // LAZY : 실행순간에 갖고옴
-    @ManyToOne(fetch = FetchType.LAZY, cascade=CascadeType.ALL)
-    @JoinColumn(name = "meeting_idx")
-    private Meeting meetingIdx;
+    @Column(name = "meeting_idx")
+    private int meetingIdx;
 
+    // 좋아요 생성시간
+    @Column(name="meetingLike_createdDate")
+    @CreatedDate
+    private LocalDateTime createdDatetime = LocalDateTime.now();
 
+    @Builder
+    public MeetingLike(int ownerIdx, int meetingIdx) {
+        this.ownerIdx = ownerIdx;
+        this.meetingIdx = meetingIdx;
+    }
 }

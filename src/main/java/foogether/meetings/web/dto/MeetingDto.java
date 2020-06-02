@@ -14,6 +14,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
+import java.security.acl.Owner;
 import java.time.LocalDateTime;
 
 @Getter
@@ -37,16 +38,16 @@ public class MeetingDto {
 
         // entity -> dto 한 후 Controller나 Service에서 작업
         // 권한(작성자인지)
-//        private boolean auth;
+       private boolean auth;
         // 좋아요한 작품인지
         private boolean isLike;
 
+    public void setAuth(boolean auth) { this.auth = auth; }
+    public void setLike(boolean like) { this.isLike = like; }
 
-    public void setLike(boolean like) {
-            isLike = like;
-        }
+    public MeetingDto(Meeting meeting, Owner owner){
 
-
+    }
 
 
     // Repository에서 entity -> dto로 바꿔주는 작업
@@ -65,7 +66,7 @@ public class MeetingDto {
     }
 
 
-    // dto에서 Entity로 바꿔주는 작업
+        // dto에서 Entity로 바꿔주는 작업
         // 먼저 Build로 선언할 것들 선언
         // Meeting Entity 지정
         public Meeting toEntity() {

@@ -34,7 +34,7 @@ public class Meeting extends BaseTimeEntity {
 
     @Column(name="meeting_createdDate")
     @CreatedDate
-    private LocalDateTime createdDate;
+    private LocalDateTime createdDatetime = LocalDateTime.now();
 
     @Column(name="meeting_updateDate")
     @LastModifiedDate
