@@ -47,9 +47,7 @@ public class MeetingServiceImpl implements MeetingService {
     // 참여자 수 조회
     @Override
     public int findMemberCount(int meetingIdx, Gender gender) {
-
-            int memberNum = meetingMemberRepository.countAllByMeetingIdxAndGender(meetingIdx, gender);
-            return memberNum;
+            return meetingMemberRepository.countAllByMeetingIdxAndGender(meetingIdx, gender);
     }
 
     // 특정 게시물 조회
