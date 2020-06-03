@@ -43,12 +43,33 @@ public class MeetingServiceImpl implements MeetingService {
 
 
     /* 모이자 상세 페이지 - 진행중 */
+    // 모집 완료 요청
+    @Transactional
+    @Override
+    public DefaultResponse<MeetingDto> postComplete(int meetingIdx, OwnerDto ownerDto) {
+        Meeting meeting = meetingRepository.findByIdx(meetingIdx);
+        if(meeting == null || meeting.getActive().equals(Active.UNACTIVE)){ // UNACTIVE인 경우 반환
+            return DefaultResponse.res("fail",
+                    ResponseMessage.READ_ALL_BUT_ZERO);
+        }
+
+        MeetingDto meetingDto = new MeetingDto(meeting);
+        meetingDto.setStatus(StatusInfo.COMPLETE);
+        meetingRepository.save(meetingDto.toEntity());
+
+        // meetingIdx 반환
+        return DefaultResponse.res("success",
+                ResponseMessage.MEETING_COMPLETE,
+                meetingDto);
+    }
+
     // 좋아요 요청 및 취소
+    @Transactional
     @Override
     public DefaultResponse<Integer> postLikeState(MeetingLikeDto meetingLikeDto) {
         // meeting Idx 가 ACTIVE인지 확인
         Meeting meeting = meetingRepository.findByIdx(meetingLikeDto.getMeetingIdx());
-        if(meeting.getActive().equals(Active.UNACTIVE)){ // UNACTIVE인 경우 반환
+        if(meeting == null || meeting.getActive().equals(Active.UNACTIVE)){ // UNACTIVE인 경우 반환
             return DefaultResponse.res("fail",
                     ResponseMessage.READ_ALL_BUT_ZERO);
         }
@@ -78,7 +99,7 @@ public class MeetingServiceImpl implements MeetingService {
     public DefaultResponse<Integer> postJoinState(MeetingMemberDto meetingMemberDto) {
         // meeting Idx 가 ACTIVE인지 확인
         Meeting meeting = meetingRepository.findByIdx(meetingMemberDto.getMeetingIdx());
-        if(meeting.getActive().equals(Active.UNACTIVE)){ // UNACTIVE인 경우 반환
+        if(meeting == null || meeting.getActive().equals(Active.UNACTIVE)){ // UNACTIVE인 경우 반환
             return DefaultResponse.res("fail",
                     ResponseMessage.READ_ALL_BUT_ZERO);
         }

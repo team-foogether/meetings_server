@@ -32,6 +32,7 @@ public class ResponseMessage {
 
     public static final String JOIN_MEETING = "참여하기 성공";
     public static final String OUT_MEETING = "참여취소 성공";
+    public static final String MEETING_COMPLETE = "모집 완료 성공";
 
 
 

@@ -15,6 +15,7 @@ import java.security.acl.Owner;
 import java.time.LocalDateTime;
 
 @Getter
+@NoArgsConstructor
 public class MeetingDto {
         private int idx;
 
@@ -33,6 +34,7 @@ public class MeetingDto {
         private String title;
         private String content;
         private Address address;
+
         private StatusInfo status;
         private int manMax;
         private int femMax;
@@ -60,6 +62,10 @@ public class MeetingDto {
 
     public void setOwnerGender(Gender ownerGender) {
         this.ownerGender = ownerGender;
+    }
+
+    public void setStatus(StatusInfo status) {
+        this.status = status;
     }
 
     public void setAuth(boolean auth) { this.auth = auth; }
@@ -100,6 +106,7 @@ public class MeetingDto {
         // Meeting Entity 지정
         public Meeting toEntity() {
             return Meeting.builder()
+                    .idx(this.idx)
                     .active(this.active)
                     .content(this.content)
                     .endDate(this.endDate)

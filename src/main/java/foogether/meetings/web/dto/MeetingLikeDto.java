@@ -26,6 +26,7 @@ public class MeetingLikeDto {
     // 먼저 Build로 선언할 것들 선언
     public MeetingLike toEntity() {
         return MeetingLike.builder()
+                .idx(this.idx)
                 .meetingIdx(this.meetingIdx)
                 .ownerIdx(this.ownerIdx)
                 .build();

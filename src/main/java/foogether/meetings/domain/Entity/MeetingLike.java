@@ -32,7 +32,8 @@ public class MeetingLike {
     private LocalDateTime createdDatetime = LocalDateTime.now();
 
     @Builder
-    public MeetingLike(int ownerIdx, int meetingIdx) {
+    public MeetingLike(int idx, int ownerIdx, int meetingIdx) {
+        this.idx = idx;
         this.ownerIdx = ownerIdx;
         this.meetingIdx = meetingIdx;
     }

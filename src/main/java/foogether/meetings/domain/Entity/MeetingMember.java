@@ -29,7 +29,8 @@ public class MeetingMember {
     private Gender gender;
 
     @Builder
-    public MeetingMember(int ownerIdx, int meetingIdx, Gender gender) {
+    public MeetingMember(int idx, int ownerIdx, int meetingIdx, Gender gender) {
+        this.idx = idx;
         this.ownerIdx = ownerIdx;
         this.meetingIdx = meetingIdx;
         this.gender = gender;

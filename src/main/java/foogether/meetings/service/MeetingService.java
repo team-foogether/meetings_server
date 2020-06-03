@@ -6,6 +6,7 @@ import foogether.meetings.domain.Entity.Meeting;
 import foogether.meetings.domain.Entity.MeetingLike;
 import foogether.meetings.domain.Entity.MeetingMember;
 import foogether.meetings.domain.Gender;
+import foogether.meetings.domain.StatusInfo;
 import foogether.meetings.web.dto.*;
 
 import java.util.List;
@@ -13,6 +14,9 @@ import java.util.List;
 public interface MeetingService {
 
     /* 특정 게시글 조회 */
+    // 모집 완료 요청
+    DefaultResponse<MeetingDto> postComplete(int meetingIdx, OwnerDto ownerDto);
+
     // 좋아요 요청 및 취소
     DefaultResponse<Integer> postLikeState(MeetingLikeDto meetingLikeDto);
 

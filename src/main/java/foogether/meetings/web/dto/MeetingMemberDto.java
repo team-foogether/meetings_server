@@ -1,5 +1,6 @@
 package foogether.meetings.web.dto;
 
+import foogether.meetings.domain.Entity.Meeting;
 import foogether.meetings.domain.Entity.MeetingMember;
 import foogether.meetings.domain.Gender;
 import lombok.Getter;
@@ -17,9 +18,18 @@ public class MeetingMemberDto {
     private int meetingIdx;
     private Gender gender;
 
+    // Repository에서 entity -> dto로 바꿔주는 작업
+    public MeetingMemberDto(MeetingMemberDto entity) {
+        this.idx = entity.getIdx();
+        this.ownerIdx = entity.getOwnerIdx();
+        this.meetingIdx = entity.getMeetingIdx();
+        this.gender = entity.getGender();
+    }
+
     // dto -> Entity
     public MeetingMember toEntity() {
         return MeetingMember.builder()
+                .idx(this.idx)
                 .meetingIdx(this.meetingIdx)
                 .gender(this.gender)
                 .ownerIdx(this.ownerIdx)
