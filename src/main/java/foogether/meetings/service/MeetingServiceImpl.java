@@ -11,10 +11,7 @@ import foogether.meetings.repository.MeetingLikeRepository;
 import foogether.meetings.repository.MeetingMemberRepository;
 import foogether.meetings.repository.MeetingRepository;
 import foogether.meetings.utils.ResponseMessage;
-import foogether.meetings.web.dto.DefaultResponse;
-import foogether.meetings.web.dto.MeetingDto;
-import foogether.meetings.web.dto.MeetingMemberDto;
-import foogether.meetings.web.dto.OwnerDto;
+import foogether.meetings.web.dto.*;
 import jdk.net.SocketFlow;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,10 +43,39 @@ public class MeetingServiceImpl implements MeetingService {
 
 
     /* 모이자 상세 페이지 - 진행중 */
+    // 좋아요 요청 및 취소
+    @Override
+    public DefaultResponse<Integer> postLikeState(MeetingLikeDto meetingLikeDto) {
+        // meeting Idx 가 ACTIVE인지 확인
+        Meeting meeting = meetingRepository.findByIdx(meetingLikeDto.getMeetingIdx());
+        if(meeting.getActive().equals(Active.UNACTIVE)){ // UNACTIVE인 경우 반환
+            return DefaultResponse.res("fail",
+                    ResponseMessage.READ_ALL_BUT_ZERO);
+        }
+
+
+        MeetingLike meetingLike = meetingLikeRepository.findByMeetingIdxAndOwnerIdx(
+                meetingLikeDto.getMeetingIdx(), meetingLikeDto.getOwnerIdx()
+        );
+        if(meetingLike == null){
+            meetingLikeRepository.save(meetingLikeDto.toEntity());
+            // meetingIdx 반환
+            return DefaultResponse.res("success",
+                    ResponseMessage.LIKE_CONTENT,
+                    meetingLikeDto.getMeetingIdx());
+        } else {
+            meetingLikeRepository.delete(meetingLike);
+            // meetingIdx 반환
+            return DefaultResponse.res("success",
+                    ResponseMessage.UNLIKE_CONTENT,
+                    meetingLikeDto.getMeetingIdx());
+        }
+    }
+
     // 참여 요청 및 취소
     @Override
     @Transactional
-    public DefaultResponse<Integer> postJoinState(MeetingMemberDto meetingMemberDto) throws Exception {
+    public DefaultResponse<Integer> postJoinState(MeetingMemberDto meetingMemberDto) {
         // meeting Idx 가 ACTIVE인지 확인
         Meeting meeting = meetingRepository.findByIdx(meetingMemberDto.getMeetingIdx());
         if(meeting.getActive().equals(Active.UNACTIVE)){ // UNACTIVE인 경우 반환

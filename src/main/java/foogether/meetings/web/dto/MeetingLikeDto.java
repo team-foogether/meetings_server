@@ -3,16 +3,17 @@ package foogether.meetings.web.dto;
 import foogether.meetings.domain.Entity.Meeting;
 import foogether.meetings.domain.Entity.MeetingLike;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 
 @Getter
+@NoArgsConstructor
 public class MeetingLikeDto {
     private int idx;
     private int ownerIdx;
-    // LAZY : 실행순
-    // 간에 갖고옴
     private int meetingIdx;
+
 
     // Repository에서 entity -> dto로 바꿔주는 작업
     public MeetingLikeDto(MeetingLike entity) {

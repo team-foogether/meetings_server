@@ -3,20 +3,21 @@ package foogether.meetings.service;
 import foogether.meetings.domain.Active;
 import foogether.meetings.domain.Address;
 import foogether.meetings.domain.Entity.Meeting;
+import foogether.meetings.domain.Entity.MeetingLike;
 import foogether.meetings.domain.Entity.MeetingMember;
 import foogether.meetings.domain.Gender;
-import foogether.meetings.web.dto.DefaultResponse;
-import foogether.meetings.web.dto.MeetingDto;
-import foogether.meetings.web.dto.MeetingMemberDto;
-import foogether.meetings.web.dto.OwnerDto;
+import foogether.meetings.web.dto.*;
 
 import java.util.List;
 
 public interface MeetingService {
 
     /* 특정 게시글 조회 */
+    // 좋아요 요청 및 취소
+    DefaultResponse<Integer> postLikeState(MeetingLikeDto meetingLikeDto);
+
     // 참여 요청 및 취소
-    DefaultResponse<Integer> postJoinState(MeetingMemberDto meetingMemberDto) throws Exception;
+    DefaultResponse<Integer> postJoinState(MeetingMemberDto meetingMemberDto);
 
     // 참여자 수 조회
     int findMemberCount(int meetingIdx, Gender gender) throws Exception;

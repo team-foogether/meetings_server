@@ -2,14 +2,12 @@ package foogether.meetings.web.controller;
 
 import foogether.meetings.domain.Address;
 import foogether.meetings.domain.Entity.Meeting;
+import foogether.meetings.domain.Entity.MeetingLike;
 import foogether.meetings.domain.Entity.MeetingMember;
 import foogether.meetings.domain.Gender;
 import foogether.meetings.service.MeetingService;
 import foogether.meetings.utils.ResponseMessage;
-import foogether.meetings.web.dto.DefaultResponse;
-import foogether.meetings.web.dto.MeetingDto;
-import foogether.meetings.web.dto.MeetingMemberDto;
-import foogether.meetings.web.dto.OwnerDto;
+import foogether.meetings.web.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.ExampleMatcher;
@@ -38,7 +36,7 @@ public class MeetingController {
     @Autowired
     MeetingService meetingService;
     /* Auth - 진행중 */
-    /* 좋아요 - 진행중 */
+
     /* 글 삭제 - 진행중 */
     /* 글 작성 - TODO: 진행중 */
 //    @Auth
@@ -54,7 +52,53 @@ public class MeetingController {
 //            }
 //    }
 
-    /* 상세 조회 부분 - Owner 받아오는 부분 / 참여한 멤버 수 / 현재 조인한 상태인지 */
+
+    /* 상세 조회 부분 - Owner 받아오는 부분 */
+    /* 찜하기 - 진행중 */
+    //TODO: Auth 추가
+    // @Auth
+    // int는 게시판 번호 리턴
+    @PostMapping("/like")
+    public ResponseEntity likeMeeting(
+            @RequestHeader(value = "Authorization", required = false) final String header,
+            @RequestBody MeetingLikeDto meetingLikeDto) {
+
+        DefaultResponse<Integer> defaultResponse;
+        try {
+            // Auth 확인
+
+            // meetingIdx 반환
+            defaultResponse =  meetingService.postLikeState(meetingLikeDto);
+            return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
+        } catch (Exception e){
+            defaultResponse = DefaultResponse.res("fail", ResponseMessage.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(defaultResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /* 참여하기 - Auth 빼고 완료 */
+    //TODO: Auth 추가
+    // @Auth
+    // int는 게시판 번호 리턴
+    @PostMapping("/join")
+    public ResponseEntity joinMeeting(
+            @RequestHeader(value = "Authorization", required = false) final String header,
+            @RequestBody MeetingMemberDto meetingMemberDto) {
+
+        DefaultResponse<Integer> defaultResponse;
+        try {
+            // Auth 확인
+
+            // meetingIdx 반환
+            defaultResponse =  meetingService.postJoinState(meetingMemberDto);
+            return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
+        } catch (Exception e){
+            defaultResponse = DefaultResponse.res("fail", ResponseMessage.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(defaultResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    // 상세 조회 페이지
     // TODO: 다른 페이지에서 실제로 Owner 받아오는 부분 구현해야함
     @GetMapping("/{meetingIdx}")
     public ResponseEntity findAllByIdx(@RequestHeader(value = "Authorization", required = false) final String header,
@@ -79,29 +123,6 @@ public class MeetingController {
         }
     }
 
-
-    /* 참여하기 - TODO: 진행중 */
-    //TODO: Auth 추가
-    // @Auth
-    // int는 게시판 번호 리턴
-    @PostMapping("/join")
-    public ResponseEntity joinMeeting(
-            @RequestHeader(value = "Authorization", required = false) final String header,
-            @RequestBody MeetingMemberDto meetingMemberDto) {
-
-        DefaultResponse<Integer> defaultResponse;
-        try {
-            // Auth 확인
-
-            // meetingIdx 반환
-            defaultResponse =  meetingService.postJoinState(meetingMemberDto);
-            return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
-        } catch (Exception e){
-            defaultResponse = DefaultResponse.res("fail", ResponseMessage.INTERNAL_SERVER_ERROR);
-            return new ResponseEntity<>(defaultResponse, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-    }
 
     /* 전체 조회 부분 완료 */
     //조건 없이 전체 조회

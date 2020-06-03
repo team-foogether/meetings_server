@@ -27,7 +27,9 @@ public class ResponseMessage {
     public static final String UPDATE_CONTENT = "컨텐츠 수정 성공";
     public static final String FAIL_UPDATE_CONTENT = "게시글 수정 실패";
     public static final String DELETE_CONTENT = "게시글 삭제 성공";
-    public static final String LIKE_CONTENT = "게시글 좋아요/해제 성공";
+    public static final String LIKE_CONTENT = "게시글 좋아요 등록 성공";
+    public static final String UNLIKE_CONTENT = "게시글 좋아요 취소 성공";
+
     public static final String JOIN_MEETING = "참여하기 성공";
     public static final String OUT_MEETING = "참여취소 성공";
 

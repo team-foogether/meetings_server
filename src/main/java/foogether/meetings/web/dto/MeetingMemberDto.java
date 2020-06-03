@@ -3,12 +3,14 @@ package foogether.meetings.web.dto;
 import foogether.meetings.domain.Entity.MeetingMember;
 import foogether.meetings.domain.Gender;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 
 @Getter
+@NoArgsConstructor
 public class MeetingMemberDto {
     private int idx;
     private int ownerIdx; // user_id
