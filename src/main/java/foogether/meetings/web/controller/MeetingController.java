@@ -2,11 +2,13 @@ package foogether.meetings.web.controller;
 
 import foogether.meetings.domain.Address;
 import foogether.meetings.domain.Entity.Meeting;
+import foogether.meetings.domain.Entity.MeetingMember;
 import foogether.meetings.domain.Gender;
 import foogether.meetings.service.MeetingService;
 import foogether.meetings.utils.ResponseMessage;
 import foogether.meetings.web.dto.DefaultResponse;
 import foogether.meetings.web.dto.MeetingDto;
+import foogether.meetings.web.dto.MeetingMemberDto;
 import foogether.meetings.web.dto.OwnerDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +31,10 @@ public class MeetingController {
     // TODO : Token 적용
     // @RequestHeader(value = "Authorization", required = false) final String header
     // ResponseEntity : Status 코드 상태변수와 body로 이루어져 있음
+    /*
+    (@RequestHeader(value = "Authorization") final String header,
+      final MeetingDto meetingDto, final MultipartFile pic_url)
+     */
     @Autowired
     MeetingService meetingService;
     /* Auth - 진행중 */
@@ -75,33 +81,36 @@ public class MeetingController {
 
 
     /* 참여하기 - TODO: 진행중 */
-    //    @Auth
-    @PostMapping("")
+    //TODO: Auth 추가
+    // @Auth
+    // int는 게시판 번호 리턴
+    @PostMapping("/join")
     public ResponseEntity joinMeeting(
-            @RequestHeader(value = "Authorization") final String header,
-            final MeetingDto meetingDto, final MultipartFile pic_url) {
-        return null;
+            @RequestHeader(value = "Authorization", required = false) final String header,
+            @RequestBody MeetingMemberDto meetingMemberDto) {
+
+        DefaultResponse<Integer> defaultResponse;
+        try {
+            // Auth 확인
+
+            // meetingIdx 반환
+            defaultResponse =  meetingService.postJoinState(meetingMemberDto);
+            return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
+        } catch (Exception e){
+            defaultResponse = DefaultResponse.res("fail", ResponseMessage.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(defaultResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
     }
 
     /* 전체 조회 부분 완료 */
-    //조건 없이 전체 조회 TODO: 참여자수/전체 참여자수
+    //조건 없이 전체 조회
     @GetMapping("/{offset}/{limit}/sort/{sort}")
     public ResponseEntity findAll(@RequestHeader(value = "Authorization", required = false) final String header,
                                   @PathVariable("sort") String sort) {
         DefaultResponse<List<MeetingDto>> defaultResponse;
         try{
             defaultResponse = meetingService.findAll(sort);
-
-            // 참여자 수 정보 삽입
-            defaultResponse.getData().stream().map(dto -> {
-                try {
-                    return null;
-                } catch (Exception e) {
-                    return  null;
-//                    defaultResponse = DefaultResponse.res("fail", ResponseMessage.INTERNAL_SERVER_ERROR);
-//                    return new ResponseEntity<>(defaultResponse, ResponseMessage.INTERNAL_SERVER_ERROR);
-                }
-            });
             return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
 
         } catch (Exception e) {

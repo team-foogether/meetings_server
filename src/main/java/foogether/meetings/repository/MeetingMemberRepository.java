@@ -7,5 +7,13 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface MeetingMemberRepository extends JpaRepository<MeetingMember, Integer> {
-    int countAllByMeetingIdxAndGender(int meeting, Gender gender);
+    //참여자인지 조회
+//    int countByMeetingIdxAndOwnerIdx(int meetingIdx, int ownerIdx);
+    MeetingMember findByMeetingIdxAndOwnerIdx(int meetingIdx, int ownerIdx);
+    // 참여자 수 조회
+    int countAllByMeetingIdxAndGender(int meetingIdx, Gender gender);
+
+    // 참여 요청 및 취소
+//    int save(int meetingIdx, int ownerIdx);
+
 }

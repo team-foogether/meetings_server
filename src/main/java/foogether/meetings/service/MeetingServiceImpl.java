@@ -13,6 +13,7 @@ import foogether.meetings.repository.MeetingRepository;
 import foogether.meetings.utils.ResponseMessage;
 import foogether.meetings.web.dto.DefaultResponse;
 import foogether.meetings.web.dto.MeetingDto;
+import foogether.meetings.web.dto.MeetingMemberDto;
 import foogether.meetings.web.dto.OwnerDto;
 import jdk.net.SocketFlow;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -44,6 +46,38 @@ public class MeetingServiceImpl implements MeetingService {
 
 
     /* 모이자 상세 페이지 - 진행중 */
+    // 참여 요청 및 취소
+    @Override
+    @Transactional
+    public DefaultResponse<Integer> postJoinState(MeetingMemberDto meetingMemberDto) throws Exception {
+        // meeting Idx 가 ACTIVE인지 확인
+        Meeting meeting = meetingRepository.findByIdx(meetingMemberDto.getMeetingIdx());
+        if(meeting.getActive().equals(Active.UNACTIVE)){ // UNACTIVE인 경우 반환
+            return DefaultResponse.res("fail",
+                    ResponseMessage.READ_ALL_BUT_ZERO);
+        }
+
+
+        MeetingMember meetingMember = meetingMemberRepository.findByMeetingIdxAndOwnerIdx(
+                meetingMemberDto.getMeetingIdx(), meetingMemberDto.getOwnerIdx()
+        );
+        if(meetingMember == null){
+            meetingMemberRepository.save(meetingMemberDto.toEntity());
+            // meetingIdx 반환
+            return DefaultResponse.res("success",
+                    ResponseMessage.JOIN_MEETING,
+                    meetingMemberDto.getMeetingIdx());
+        } else {
+            meetingMemberRepository.delete(meetingMember);
+            // meetingIdx 반환
+            return DefaultResponse.res("success",
+                    ResponseMessage.OUT_MEETING,
+                    meetingMemberDto.getMeetingIdx());
+        }
+
+
+    }
+
     // 참여자 수 조회
     @Override
     public int findMemberCount(int meetingIdx, Gender gender) {
@@ -57,7 +91,7 @@ public class MeetingServiceImpl implements MeetingService {
             Meeting meeting = meetingRepository.findByIdxAndActive(meetingIdx, Active.ACTIVE);
             // meeting 정보가 없으면
             if (meeting == null) {
-                return DefaultResponse.res("success", ResponseMessage.NOT_FOUND_LIST);
+                return DefaultResponse.res("fail", ResponseMessage.NOT_FOUND_LIST);
             }
 
             MeetingDto meetingDto = new MeetingDto(meeting);

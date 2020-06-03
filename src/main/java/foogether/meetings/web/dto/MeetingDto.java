@@ -25,7 +25,7 @@ public class MeetingDto {
         private Gender ownerGender;
 
         // 전체 보기에서 나오는 하나의 Image
-        // MeetingImgs 에서는 여러개의 Imag
+        // MeetingImgs 에서는 여러개의 Image
         private String imgUrl;
 
         // DateInfo
@@ -73,12 +73,11 @@ public class MeetingDto {
         this.femNum = femNum;
     }
 
-    public void setJoin(boolean join) {
-        isJoin = join;
+    public void setJoin(boolean isJoin) {
+        this.isJoin = isJoin;
     }
 
-    public MeetingDto() {
-    }
+
 
     // Repository에서 entity -> dto로 바꿔주는 작업
     public MeetingDto(Meeting entity) {

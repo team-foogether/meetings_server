@@ -18,6 +18,9 @@ import java.util.List;
 public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
 
     /* 상세 조회 */
+    // 특정 게시물의 삭제여부 조회
+    Meeting findByIdx(int meetingIdx);
+    
     // 특정 게시물 조회
     Meeting findByIdxAndActive(int meetingIdx, Active active);
 

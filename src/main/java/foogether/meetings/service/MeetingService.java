@@ -3,9 +3,11 @@ package foogether.meetings.service;
 import foogether.meetings.domain.Active;
 import foogether.meetings.domain.Address;
 import foogether.meetings.domain.Entity.Meeting;
+import foogether.meetings.domain.Entity.MeetingMember;
 import foogether.meetings.domain.Gender;
 import foogether.meetings.web.dto.DefaultResponse;
 import foogether.meetings.web.dto.MeetingDto;
+import foogether.meetings.web.dto.MeetingMemberDto;
 import foogether.meetings.web.dto.OwnerDto;
 
 import java.util.List;
@@ -13,8 +15,12 @@ import java.util.List;
 public interface MeetingService {
 
     /* 특정 게시글 조회 */
+    // 참여 요청 및 취소
+    DefaultResponse<Integer> postJoinState(MeetingMemberDto meetingMemberDto) throws Exception;
+
     // 참여자 수 조회
     int findMemberCount(int meetingIdx, Gender gender) throws Exception;
+
     // 특정 게시물 조회
     DefaultResponse<MeetingDto> findByIdx(int meetingIdx, OwnerDto ownerDto) throws Exception;
 

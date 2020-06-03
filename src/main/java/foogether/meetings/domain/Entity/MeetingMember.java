@@ -1,6 +1,7 @@
 package foogether.meetings.domain.Entity;
 
 import foogether.meetings.domain.Gender;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,4 +27,11 @@ public class MeetingMember {
     @Enumerated(EnumType.STRING)
     @Column(name="owner_gender")
     private Gender gender;
+
+    @Builder
+    public MeetingMember(int ownerIdx, int meetingIdx, Gender gender) {
+        this.ownerIdx = ownerIdx;
+        this.meetingIdx = meetingIdx;
+        this.gender = gender;
+    }
 }
