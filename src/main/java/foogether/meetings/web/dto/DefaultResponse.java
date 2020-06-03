@@ -18,7 +18,6 @@ public class DefaultResponse<T> {
     // T 타입 data
     private T data;
 
-
     public DefaultResponse(final String result, final String message) {
         this.result = result;
         this.message = message;
@@ -43,6 +42,7 @@ public class DefaultResponse<T> {
                 .message(message)
                 .build();
     }
+
 
     public static <T> DefaultResponse<T> res(final String result, final int len, final String message, final T t) {
         return DefaultResponse.<T>builder()

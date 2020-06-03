@@ -46,7 +46,7 @@ public class MeetingServiceImpl implements MeetingService {
     // 모집 완료 요청
     @Transactional
     @Override
-    public DefaultResponse<MeetingDto> postComplete(int meetingIdx, OwnerDto ownerDto) {
+    public DefaultResponse<Integer> postComplete(int meetingIdx, OwnerDto ownerDto) {
         Meeting meeting = meetingRepository.findByIdx(meetingIdx);
         if(meeting == null || meeting.getActive().equals(Active.UNACTIVE)){ // UNACTIVE인 경우 반환
             return DefaultResponse.res("fail",
@@ -60,7 +60,7 @@ public class MeetingServiceImpl implements MeetingService {
         // meetingIdx 반환
         return DefaultResponse.res("success",
                 ResponseMessage.MEETING_COMPLETE,
-                meetingDto);
+                meetingDto.getIdx());
     }
 
     // 좋아요 요청 및 취소

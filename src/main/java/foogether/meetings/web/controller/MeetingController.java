@@ -65,7 +65,7 @@ public class MeetingController {
             @RequestHeader(value = "Authorization", required = false) final String header,
             @PathVariable("meetingIdx") int meetingIdx) {
 
-        DefaultResponse<MeetingDto> defaultResponse;
+        DefaultResponse<Integer> defaultResponse;
 
         try {
             //TODO: decode(token) 이용해서 Owner 갖고오기
