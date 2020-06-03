@@ -1,5 +1,6 @@
 package foogether.meetings.web.dto;
 
+import foogether.meetings.domain.Gender;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -9,10 +10,12 @@ public class OwnerDto {
     private int ownerIdx;
     private String ownerProfileImg;
     private String ownerNickname;
+    private Gender ownerGener;
 
-    public OwnerDto(int ownerIdx, String ownerProfileImg, String ownerNickname) {
+    public OwnerDto(int ownerIdx, String ownerProfileImg, String ownerNickname, Gender ownerGener) {
         this.ownerIdx = ownerIdx;
         this.ownerProfileImg = ownerProfileImg;
         this.ownerNickname = ownerNickname;
+        this.ownerGener = ownerGener;
     }
 }

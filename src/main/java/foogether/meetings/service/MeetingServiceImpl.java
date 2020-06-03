@@ -4,8 +4,11 @@ import foogether.meetings.domain.Active;
 import foogether.meetings.domain.Address;
 import foogether.meetings.domain.Entity.Meeting;
 import foogether.meetings.domain.Entity.MeetingLike;
+import foogether.meetings.domain.Entity.MeetingMember;
+import foogether.meetings.domain.Gender;
 import foogether.meetings.domain.StatusInfo;
 import foogether.meetings.repository.MeetingLikeRepository;
+import foogether.meetings.repository.MeetingMemberRepository;
 import foogether.meetings.repository.MeetingRepository;
 import foogether.meetings.utils.ResponseMessage;
 import foogether.meetings.web.dto.DefaultResponse;
@@ -32,17 +35,31 @@ public class MeetingServiceImpl implements MeetingService {
     private final MeetingRepository meetingRepository;
     @Autowired
     private final MeetingLikeRepository meetingLikeRepository;
+    @Autowired
+    private final MeetingMemberRepository meetingMemberRepository;
+
+
+    /* User정보 조회 */
+
 
 
     /* 모이자 상세 페이지 - 진행중 */
+    // 참여자 수 조회
+    @Override
+    public int findMemberCount(int meetingIdx, Gender gender) {
+
+            int memberNum = meetingMemberRepository.countAllByMeetingIdxAndGender(meetingIdx, gender);
+            return memberNum;
+    }
+
     // 특정 게시물 조회
     @Override
     public DefaultResponse<MeetingDto> findByIdx(int meetingIdx, OwnerDto ownerDto) throws Exception {
         try {
-            Meeting meeting = meetingRepository.findByIdx(meetingIdx);
-            // meeting 정보가 없거나 UNACTIVE 하면
-            if (meeting == null || meeting.getActive().equals(Active.UNACTIVE)) {
-                return DefaultResponse.res("fail", ResponseMessage.NOT_FOUND_LIST);
+            Meeting meeting = meetingRepository.findByIdxAndActive(meetingIdx, Active.ACTIVE);
+            // meeting 정보가 없으면
+            if (meeting == null) {
+                return DefaultResponse.res("success", ResponseMessage.NOT_FOUND_LIST);
             }
 
             MeetingDto meetingDto = new MeetingDto(meeting);
@@ -62,6 +79,16 @@ public class MeetingServiceImpl implements MeetingService {
             if(meetingLike != null){
                 meetingDto.setLike(true);
             }
+
+            //참여자 수
+            meetingDto.setFemNum(findMemberCount(meetingDto.getIdx(),Gender.F));
+            meetingDto.setManNum(findMemberCount(meetingDto.getIdx(), Gender.M));
+
+            // 개최자 정보 저장
+            meetingDto.setOwnerNickname(ownerDto.getOwnerNickname());
+            meetingDto.setOwnerProfileImg(ownerDto.getOwnerProfileImg());
+            meetingDto.setOwnerGender(ownerDto.getOwnerGener());
+
 
             return DefaultResponse.res("success", ResponseMessage.READ_CONTENT,
                     meetingDto);
@@ -99,10 +126,17 @@ public class MeetingServiceImpl implements MeetingService {
             return DefaultResponse.res("success", ResponseMessage.READ_ALL_BUT_ZERO);
         }
 
+
+
         return DefaultResponse.res("success", numMeeting, ResponseMessage.READ_ALL_CONTENTS,
-                meetingList.stream()
-                        .map(meetings -> new MeetingDto(meetings))
-                        .collect(Collectors.toList()));
+                meetingList.stream().map(meetings -> {
+                    MeetingDto meetingDto = new MeetingDto(meetings);
+                    meetingDto.setFemNum(findMemberCount(meetingDto.getIdx(), Gender.F));
+                    meetingDto.setManNum(findMemberCount(meetingDto.getIdx(), Gender.M));
+                    return meetingDto;
+                })
+                .collect(Collectors.toList()));
+
 
     }
 
@@ -184,9 +218,12 @@ public class MeetingServiceImpl implements MeetingService {
         }
 
         return DefaultResponse.res("success", numMeeting, ResponseMessage.READ_ALL_CONTENTS,
-                meetingList.stream()
-                        .map(meetings -> new MeetingDto(meetings))
-                        .collect(Collectors.toList()));
+                meetingList.stream().map(meetings -> {
+                    MeetingDto meetingDto = new MeetingDto(meetings);
+                    meetingDto.setFemNum(findMemberCount(meetingDto.getIdx(), Gender.F));
+                    meetingDto.setManNum(findMemberCount(meetingDto.getIdx(), Gender.M));
+                    return meetingDto;
+                }).collect(Collectors.toList()));
     }
 
     // 제목 keyword로 검색
@@ -215,9 +252,12 @@ public class MeetingServiceImpl implements MeetingService {
         }
 
         return DefaultResponse.res("success", numMeeting, ResponseMessage.READ_ALL_CONTENTS,
-                meetingList.stream()
-                        .map(meetings -> new MeetingDto(meetings))
-                        .collect(Collectors.toList()));
+                meetingList.stream().map(meetings -> {
+                    MeetingDto meetingDto = new MeetingDto(meetings);
+                    meetingDto.setFemNum(findMemberCount(meetingDto.getIdx(), Gender.F));
+                    meetingDto.setManNum(findMemberCount(meetingDto.getIdx(), Gender.M));
+                    return meetingDto;
+                }).collect(Collectors.toList()));
     }
 
 

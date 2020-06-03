@@ -1,10 +1,7 @@
 package foogether.meetings.web.dto;
 
-import foogether.meetings.domain.Active;
-import foogether.meetings.domain.Address;
-import foogether.meetings.domain.DateInfo;
+import foogether.meetings.domain.*;
 import foogether.meetings.domain.Entity.Meeting;
-import foogether.meetings.domain.StatusInfo;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
@@ -20,7 +17,13 @@ import java.time.LocalDateTime;
 @Getter
 public class MeetingDto {
         private int idx;
+
+        // 작성자 정보
         private int ownerIdx; // user_id
+        private String ownerProfileImg;
+        private String ownerNickname;
+        private Gender ownerGender;
+
         // 전체 보기에서 나오는 하나의 Image
         // MeetingImgs 에서는 여러개의 Imag
         private String imgUrl;
@@ -33,22 +36,49 @@ public class MeetingDto {
         private StatusInfo status;
         private int manMax;
         private int femMax;
+        private int manNum;
+        private int femNum;
         // 활동중인 회원이 작성한 글인지 확인
         private Active active;
 
         // entity -> dto 한 후 Controller나 Service에서 작업
         // 권한(작성자인지)
-       private boolean auth;
+        private boolean auth;
         // 좋아요한 작품인지
         private boolean isLike;
+        // 참석 중인지
+        private boolean isJoin;
+
+
+    public void setOwnerProfileImg(String ownerProfileImg) {
+        this.ownerProfileImg = ownerProfileImg;
+    }
+
+    public void setOwnerNickname(String ownerNickname) {
+        this.ownerNickname = ownerNickname;
+    }
+
+    public void setOwnerGender(Gender ownerGender) {
+        this.ownerGender = ownerGender;
+    }
 
     public void setAuth(boolean auth) { this.auth = auth; }
     public void setLike(boolean like) { this.isLike = like; }
 
-    public MeetingDto(Meeting meeting, Owner owner){
-
+    public void setManNum(int manNum) {
+        this.manNum = manNum;
     }
 
+    public void setFemNum(int femNum) {
+        this.femNum = femNum;
+    }
+
+    public void setJoin(boolean join) {
+        isJoin = join;
+    }
+
+    public MeetingDto() {
+    }
 
     // Repository에서 entity -> dto로 바꿔주는 작업
     public MeetingDto(Meeting entity) {

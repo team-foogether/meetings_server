@@ -19,7 +19,7 @@ public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
 
     /* 상세 조회 */
     // 특정 게시물 조회
-    Meeting findByIdx(int meetingIdx);
+    Meeting findByIdxAndActive(int meetingIdx, Active active);
 
     /* 기본 전체 조회 */
     List<Meeting> findAllByActive(Active active);
