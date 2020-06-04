@@ -28,7 +28,7 @@ public class MeetingDetailDto {
 
         // 전체 보기에서 나오는 하나의 Image
         // MeetingImgs 에서는 여러개의 Image
-        private String imgUrl;
+//        private String imgUrl;
         private List<MeetingImgsDto> imgUrlList;
 
         // DateInfo
@@ -93,7 +93,7 @@ public class MeetingDetailDto {
     public MeetingDetailDto(Meeting entity) {
         this.idx = entity.getIdx();
         this.ownerIdx = entity.getOwnerIdx();
-        this.imgUrl = entity.getImgUrl();
+//        this.imgUrl = entity.getImgUrl();
         this.endDate = entity.getEndDate();
         this.title = entity.getTitle();
         this.content = entity.getContent();
@@ -116,7 +116,7 @@ public class MeetingDetailDto {
                     .endDate(this.endDate)
                     .femMax(this.femMax)
                     .manMax(this.manMax)
-                    .imgUrl(this.imgUrl)
+//                    .imgUrl(this.imgUrl)
                     .status(this.status)
                     .title(this.title)
                     .ownerIdx(this.ownerIdx)

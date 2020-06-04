@@ -15,9 +15,9 @@ public class MeetingImgsDto {
 
     // Entity -> dto
     public MeetingImgsDto(MeetingImgs entity) {
-        this.idx = getIdx();
-        this.meetingIdx = getMeetingIdx();
-        this.imgUrl = getImgUrl();
+        this.idx = entity.getIdx();
+        this.meetingIdx = entity.getMeetingIdx();
+        this.imgUrl = entity.getImgUrl();
     }
 
     // dto -> entity

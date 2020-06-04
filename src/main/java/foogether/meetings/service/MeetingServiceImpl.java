@@ -169,14 +169,7 @@ public class MeetingServiceImpl implements MeetingService {
                 meetingDetailDto.setJoin(true);
             }
 
-            //TODO: pic
-//            List<MeetingImgs> meetingImgs = meetingImgsRepository.findAllByMeetingIdx(
-//                    meetingIdx
-//            );
-//            // meetingImgs -> meetingImgsDto로 변경
-//            List<MeetingImgsDto> meetingImgsDtos = meetingImgs.stream().map(
-//                    meetingImg -> new MeetingImgsDto(meetingImg)
-//            ).collect(Collectors.toList());
+            // 사진 정보 가져오기
             List<MeetingImgsDto> meetingImgsDtos =
                     findImgsByMeetingIdx(meetingIdx);
 
@@ -188,7 +181,7 @@ public class MeetingServiceImpl implements MeetingService {
             meetingDetailDto.setOwnerGender(ownerDto.getOwnerGener());
 
 
-            return DefaultResponse.res("success", ResponseMessage.READ_CONTENT,
+            return DefaultResponse.res("success", 1, ResponseMessage.READ_CONTENT,
                     meetingDetailDto);
         } catch (Exception e) {
             return DefaultResponse.res("fail", ResponseMessage.INTERNAL_SERVER_ERROR);

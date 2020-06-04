@@ -13,14 +13,9 @@ public class MeetingDto {
 
     // 작성자 정보
     private int ownerIdx; // user_id
-//    private String ownerProfileImg;
-//    private String ownerNickname;
-//    private Gender ownerGender;
 
     // 한개의 Images // TODO: multipart
     private String imgUrl;
-    // MeetingImgs 에서는 여러개의 Image
-//    private List<MeetingImgsDto> imgUrlList;
 
     // DateInfo
     private DateInfo endDate;

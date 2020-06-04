@@ -21,7 +21,7 @@ public class MeetingImgs {
     @Column(name = "meeting_idx")
     int meetingIdx;
 
-    @Column(name = "imgUrl")
+    @Column(name = "meeting_imgUrl")
     String imgUrl;
 
     @Builder
@@ -30,4 +30,5 @@ public class MeetingImgs {
         this.imgUrl = imgUrl;
         this.meetingIdx = meetingIdx;
     }
+
 }
