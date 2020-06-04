@@ -159,8 +159,8 @@ public class MeetingServiceImpl implements MeetingService {
             }
 
             //참여자 수
-            meetingDetailDto.setFemNum(findMemberCount(meetingDetailDto.getIdx(),Gender.F));
-            meetingDetailDto.setManNum(findMemberCount(meetingDetailDto.getIdx(), Gender.M));
+            meetingDetailDto.setFemNum(findMemberCount(meetingDetailDto.getIdx(),Gender.FEMALE));
+            meetingDetailDto.setManNum(findMemberCount(meetingDetailDto.getIdx(), Gender.MALE));
 
             //참여 여부
             MeetingMember meetingMember =
@@ -239,8 +239,8 @@ public class MeetingServiceImpl implements MeetingService {
         return DefaultResponse.res("success", numMeeting, ResponseMessage.READ_ALL_CONTENTS,
                 meetingList.stream().map(meetings -> {
                     MeetingDto meetingDto = new MeetingDto(meetings);
-                    meetingDto.setFemNum(findMemberCount(meetingDto.getIdx(), Gender.F));
-                    meetingDto.setManNum(findMemberCount(meetingDto.getIdx(), Gender.M));
+                    meetingDto.setFemNum(findMemberCount(meetingDto.getIdx(), Gender.FEMALE));
+                    meetingDto.setManNum(findMemberCount(meetingDto.getIdx(), Gender.MALE));
                     if(findImgsByMeetingIdx(meetingDto.getIdx()).size() != 0){
                         meetingDto.setImgUrl(findImgsByMeetingIdx(meetingDto.getIdx()).get(0).getImgUrl());
                     }
@@ -330,8 +330,8 @@ public class MeetingServiceImpl implements MeetingService {
         return DefaultResponse.res("success", numMeeting, ResponseMessage.READ_ALL_CONTENTS,
                 meetingList.stream().map(meetings -> {
                     MeetingDto meetingDto = new MeetingDto(meetings);
-                    meetingDto.setFemNum(findMemberCount(meetingDto.getIdx(), Gender.F));
-                    meetingDto.setManNum(findMemberCount(meetingDto.getIdx(), Gender.M));
+                    meetingDto.setFemNum(findMemberCount(meetingDto.getIdx(), Gender.FEMALE));
+                    meetingDto.setManNum(findMemberCount(meetingDto.getIdx(), Gender.MALE));
                     if(findImgsByMeetingIdx(meetingDto.getIdx()).size() != 0){
                         meetingDto.setImgUrl(findImgsByMeetingIdx(meetingDto.getIdx()).get(0).getImgUrl());
                     }
@@ -369,8 +369,8 @@ public class MeetingServiceImpl implements MeetingService {
         return DefaultResponse.res("success", numMeeting, ResponseMessage.READ_ALL_CONTENTS,
                 meetingList.stream().map(meetings -> {
                     MeetingDto meetingDto = new MeetingDto(meetings);
-                    meetingDto.setFemNum(findMemberCount(meetingDto.getIdx(), Gender.F));
-                    meetingDto.setManNum(findMemberCount(meetingDto.getIdx(), Gender.M));
+                    meetingDto.setFemNum(findMemberCount(meetingDto.getIdx(), Gender.FEMALE));
+                    meetingDto.setManNum(findMemberCount(meetingDto.getIdx(), Gender.MALE));
                     if(findImgsByMeetingIdx(meetingDto.getIdx()).size() != 0){
                         meetingDto.setImgUrl(findImgsByMeetingIdx(meetingDto.getIdx()).get(0).getImgUrl());
                     }

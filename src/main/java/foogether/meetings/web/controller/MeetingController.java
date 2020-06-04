@@ -26,7 +26,8 @@ public class MeetingController {
       final MeetingDto meetingDto, final MultipartFile pic_url)
      */
     // TODO: 삭제
-    OwnerDto ownerDto = new OwnerDto(5, "owner's profileImg", "닉네임", Gender.F);
+    OwnerDto ownerDto = new OwnerDto(5, "owner's profileImg", "닉네임", Gender.FEMALE
+);
 
     @Autowired
     MeetingService meetingService;
@@ -36,6 +37,7 @@ public class MeetingController {
     /* 참여자 List 가져오기 */
     /* 글 삭제 - 진행중 */
     /* 글 작성 - TODO: 진행중 */
+
 //    @Auth
 //    @PostMapping("")
 //    public ResponseEntity saveMeeting(
