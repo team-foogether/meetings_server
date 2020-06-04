@@ -1,5 +1,6 @@
 package foogether.meetings.domain.Entity;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import foogether.meetings.domain.*;
 import lombok.Builder;
 import lombok.Data;
@@ -18,8 +19,7 @@ import java.util.List;
 @Table(name="meeting")
 @NoArgsConstructor
 @Getter
-@org.hibernate.annotations.DynamicUpdate
-public class Meeting extends BaseTimeEntity {
+public class Meeting {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "meeting_idx")
@@ -37,7 +37,7 @@ public class Meeting extends BaseTimeEntity {
     @CreatedDate
     private LocalDateTime createdDatetime = LocalDateTime.now();
 
-    @Column(name="meeting_updateDate")
+    @Column(name="meeting_modifiedDate")
     @LastModifiedDate
     private LocalDateTime modifiedDate;
 
@@ -68,14 +68,16 @@ public class Meeting extends BaseTimeEntity {
     @Column(name="meeting_active")
     private Active active;
 
+
     // MeetingDto에서 호출하여 dto->Entity로 만들때 사용
     @Builder
-    public Meeting(int idx, int ownerIdx, String imgUrl, DateInfo endDate, String title, String content,
+    public Meeting(int idx, int ownerIdx, String imgUrl, LocalDateTime modifiedDate, DateInfo endDate, String title, String content,
                       Address address, StatusInfo status, int manMax, int femMax, Active active) {
 //        // autoIncrement로 DB에서 저장할때 자동으로 올려주기 때문에 따로 저장 하지 않음
         this.idx = idx;
         this.ownerIdx = ownerIdx;
         this.imgUrl = imgUrl;
+        this.modifiedDate = modifiedDate;
         this.endDate = endDate;
         this.title = title;
         this.content = content;

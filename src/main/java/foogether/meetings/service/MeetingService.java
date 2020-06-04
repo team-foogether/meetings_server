@@ -1,12 +1,8 @@
 package foogether.meetings.service;
 
-import foogether.meetings.domain.Active;
 import foogether.meetings.domain.Address;
 import foogether.meetings.domain.Entity.Meeting;
-import foogether.meetings.domain.Entity.MeetingLike;
-import foogether.meetings.domain.Entity.MeetingMember;
 import foogether.meetings.domain.Gender;
-import foogether.meetings.domain.StatusInfo;
 import foogether.meetings.web.dto.*;
 
 import java.util.List;
@@ -27,9 +23,11 @@ public interface MeetingService {
     int findMemberCount(int meetingIdx, Gender gender) throws Exception;
 
     // 특정 게시물 조회
-    DefaultResponse<MeetingDto> findByIdx(int meetingIdx, OwnerDto ownerDto) throws Exception;
+    DefaultResponse<MeetingDetailDto> findByIdx(int meetingIdx, OwnerDto ownerDto) throws Exception;
 
     /* 전체 게시글 조회 */
+    // Img 조회
+    List<MeetingImgsDto> findImgsByMeetingIdx(int meetingIdx);
     // Entity List타입으로 먼저 반환받음
     // 전체 조회
     DefaultResponse<List<MeetingDto>> findAll(String sort) throws Exception;

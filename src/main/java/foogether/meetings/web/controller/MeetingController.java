@@ -1,25 +1,17 @@
 package foogether.meetings.web.controller;
 
 import foogether.meetings.domain.Address;
-import foogether.meetings.domain.Entity.Meeting;
-import foogether.meetings.domain.Entity.MeetingLike;
-import foogether.meetings.domain.Entity.MeetingMember;
 import foogether.meetings.domain.Gender;
 import foogether.meetings.service.MeetingService;
 import foogether.meetings.utils.ResponseMessage;
 import foogether.meetings.web.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @RequestMapping("/meetings")
@@ -40,6 +32,8 @@ public class MeetingController {
     MeetingService meetingService;
     /* Auth - 진행중 */
 
+
+    /* 참여자 List 가져오기 */
     /* 글 삭제 - 진행중 */
     /* 글 작성 - TODO: 진행중 */
 //    @Auth
@@ -134,7 +128,7 @@ public class MeetingController {
     public ResponseEntity findAllByIdx(@RequestHeader(value = "Authorization", required = false) final String header,
                                        @PathVariable("meetingIdx") int meetingIdx){
 
-        DefaultResponse<MeetingDto> defaultResponse;
+        DefaultResponse<MeetingDetailDto> defaultResponse;
 
         try{
             // Writer 정보 조회하는 service 또는 Controller에서 api를 통해 호출해서 작성자 ProfileImg, nickname 저장

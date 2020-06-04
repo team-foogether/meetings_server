@@ -3,22 +3,20 @@ package foogether.meetings.service;
 import foogether.meetings.domain.Active;
 import foogether.meetings.domain.Address;
 import foogether.meetings.domain.Entity.Meeting;
+import foogether.meetings.domain.Entity.MeetingImgs;
 import foogether.meetings.domain.Entity.MeetingLike;
 import foogether.meetings.domain.Entity.MeetingMember;
 import foogether.meetings.domain.Gender;
 import foogether.meetings.domain.StatusInfo;
+import foogether.meetings.repository.MeetingImgsRepository;
 import foogether.meetings.repository.MeetingLikeRepository;
 import foogether.meetings.repository.MeetingMemberRepository;
 import foogether.meetings.repository.MeetingRepository;
 import foogether.meetings.utils.ResponseMessage;
 import foogether.meetings.web.dto.*;
-import jdk.net.SocketFlow;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.omg.PortableInterceptor.ACTIVE;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Example;
-import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -36,7 +34,8 @@ public class MeetingServiceImpl implements MeetingService {
     private final MeetingLikeRepository meetingLikeRepository;
     @Autowired
     private final MeetingMemberRepository meetingMemberRepository;
-
+    @Autowired
+    private final MeetingImgsRepository meetingImgsRepository;
 
     /* User정보 조회 */
 
@@ -53,7 +52,7 @@ public class MeetingServiceImpl implements MeetingService {
                     ResponseMessage.READ_ALL_BUT_ZERO);
         }
 
-        MeetingDto meetingDto = new MeetingDto(meeting);
+        MeetingDetailDto meetingDto = new MeetingDetailDto(meeting);
         meetingDto.setStatus(StatusInfo.COMPLETE);
         meetingRepository.save(meetingDto.toEntity());
 
@@ -133,7 +132,7 @@ public class MeetingServiceImpl implements MeetingService {
 
     // 특정 게시물 조회
     @Override
-    public DefaultResponse<MeetingDto> findByIdx(int meetingIdx, OwnerDto ownerDto) throws Exception {
+    public DefaultResponse<MeetingDetailDto> findByIdx(int meetingIdx, OwnerDto ownerDto) throws Exception {
         try {
             Meeting meeting = meetingRepository.findByIdxAndActive(meetingIdx, Active.ACTIVE);
             // meeting 정보가 없으면
@@ -141,40 +140,77 @@ public class MeetingServiceImpl implements MeetingService {
                 return DefaultResponse.res("fail", ResponseMessage.NOT_FOUND_LIST);
             }
 
-            MeetingDto meetingDto = new MeetingDto(meeting);
+            MeetingDetailDto meetingDetailDto = new MeetingDetailDto(meeting);
 
-            log.info("meetingIdx >>> " + meetingDto.getIdx());
-            log.info("ownerIdx of meetingIdx >>> " + meetingDto.getOwnerIdx());
+            log.info("meetingIdx >>> " + meetingDetailDto.getIdx());
+            log.info("ownerIdx of meetingIdx >>> " + meetingDetailDto.getOwnerIdx());
             log.info("ownerIdx >>> " + ownerDto.getOwnerIdx());
 
             // owner인지 확인
-            if(ownerDto.getOwnerIdx() == meetingDto.getOwnerIdx()){
-                meetingDto.setAuth(true);
+            if(ownerDto.getOwnerIdx() == meetingDetailDto.getOwnerIdx()){
+                meetingDetailDto.setAuth(true);
             }
 
             // like했는지 확인
             MeetingLike meetingLike = meetingLikeRepository.findByMeetingIdxAndOwnerIdx(meetingIdx, ownerDto.getOwnerIdx());
 
             if(meetingLike != null){
-                meetingDto.setLike(true);
+                meetingDetailDto.setLike(true);
             }
 
             //참여자 수
-            meetingDto.setFemNum(findMemberCount(meetingDto.getIdx(),Gender.F));
-            meetingDto.setManNum(findMemberCount(meetingDto.getIdx(), Gender.M));
+            meetingDetailDto.setFemNum(findMemberCount(meetingDetailDto.getIdx(),Gender.F));
+            meetingDetailDto.setManNum(findMemberCount(meetingDetailDto.getIdx(), Gender.M));
+
+            //참여 여부
+            MeetingMember meetingMember =
+                    meetingMemberRepository.findByMeetingIdxAndOwnerIdx(meetingIdx, ownerDto.getOwnerIdx());
+            if(meetingMember != null) {
+                meetingDetailDto.setJoin(true);
+            }
+
+            //TODO: pic
+//            List<MeetingImgs> meetingImgs = meetingImgsRepository.findAllByMeetingIdx(
+//                    meetingIdx
+//            );
+//            // meetingImgs -> meetingImgsDto로 변경
+//            List<MeetingImgsDto> meetingImgsDtos = meetingImgs.stream().map(
+//                    meetingImg -> new MeetingImgsDto(meetingImg)
+//            ).collect(Collectors.toList());
+            List<MeetingImgsDto> meetingImgsDtos =
+                    findImgsByMeetingIdx(meetingIdx);
+
+            meetingDetailDto.setImgUrlList(meetingImgsDtos);
 
             // 개최자 정보 저장
-            meetingDto.setOwnerNickname(ownerDto.getOwnerNickname());
-            meetingDto.setOwnerProfileImg(ownerDto.getOwnerProfileImg());
-            meetingDto.setOwnerGender(ownerDto.getOwnerGener());
+            meetingDetailDto.setOwnerNickname(ownerDto.getOwnerNickname());
+            meetingDetailDto.setOwnerProfileImg(ownerDto.getOwnerProfileImg());
+            meetingDetailDto.setOwnerGender(ownerDto.getOwnerGener());
 
 
             return DefaultResponse.res("success", ResponseMessage.READ_CONTENT,
-                    meetingDto);
+                    meetingDetailDto);
         } catch (Exception e) {
             return DefaultResponse.res("fail", ResponseMessage.INTERNAL_SERVER_ERROR);
         }
     }
+
+    // 이미지리스트 조회
+    @Override
+    public List<MeetingImgsDto> findImgsByMeetingIdx(int meetingIdx) {
+        List<MeetingImgs> meetingImgs = meetingImgsRepository.findAllByMeetingIdx(
+                meetingIdx
+        );
+
+        // meetingImgs -> meetingImgsDto로 변경
+        List<MeetingImgsDto> meetingImgsDtos = meetingImgs.stream().map(
+                meetingImg -> new MeetingImgsDto(meetingImg)
+        ).collect(Collectors.toList());
+
+
+        return meetingImgsDtos;
+    }
+
 
     /* 모이자 메인 페이지 - 완료 */
     // 게시글 전체 조회(ACTIVE 인것만)
@@ -212,9 +248,11 @@ public class MeetingServiceImpl implements MeetingService {
                     MeetingDto meetingDto = new MeetingDto(meetings);
                     meetingDto.setFemNum(findMemberCount(meetingDto.getIdx(), Gender.F));
                     meetingDto.setManNum(findMemberCount(meetingDto.getIdx(), Gender.M));
+                    if(findImgsByMeetingIdx(meetingDto.getIdx()).size() != 0){
+                        meetingDto.setImgUrl(findImgsByMeetingIdx(meetingDto.getIdx()).get(0).getImgUrl());
+                    }
                     return meetingDto;
-                })
-                .collect(Collectors.toList()));
+                }).collect(Collectors.toList()));
 
 
     }
@@ -301,6 +339,9 @@ public class MeetingServiceImpl implements MeetingService {
                     MeetingDto meetingDto = new MeetingDto(meetings);
                     meetingDto.setFemNum(findMemberCount(meetingDto.getIdx(), Gender.F));
                     meetingDto.setManNum(findMemberCount(meetingDto.getIdx(), Gender.M));
+                    if(findImgsByMeetingIdx(meetingDto.getIdx()).size() != 0){
+                        meetingDto.setImgUrl(findImgsByMeetingIdx(meetingDto.getIdx()).get(0).getImgUrl());
+                    }
                     return meetingDto;
                 }).collect(Collectors.toList()));
     }
@@ -330,11 +371,16 @@ public class MeetingServiceImpl implements MeetingService {
             return DefaultResponse.res("success", ResponseMessage.READ_ALL_BUT_ZERO);
         }
 
+
+
         return DefaultResponse.res("success", numMeeting, ResponseMessage.READ_ALL_CONTENTS,
                 meetingList.stream().map(meetings -> {
                     MeetingDto meetingDto = new MeetingDto(meetings);
                     meetingDto.setFemNum(findMemberCount(meetingDto.getIdx(), Gender.F));
                     meetingDto.setManNum(findMemberCount(meetingDto.getIdx(), Gender.M));
+                    if(findImgsByMeetingIdx(meetingDto.getIdx()).size() != 0){
+                        meetingDto.setImgUrl(findImgsByMeetingIdx(meetingDto.getIdx()).get(0).getImgUrl());
+                    }
                     return meetingDto;
                 }).collect(Collectors.toList()));
     }
