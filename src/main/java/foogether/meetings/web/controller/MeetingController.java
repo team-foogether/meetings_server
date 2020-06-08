@@ -3,6 +3,7 @@ package foogether.meetings.web.controller;
 import foogether.meetings.domain.Address;
 import foogether.meetings.domain.Gender;
 import foogether.meetings.service.MeetingService;
+import foogether.meetings.service.S3FileUploadService;
 import foogether.meetings.utils.ResponseMessage;
 import foogether.meetings.web.dto.*;
 import lombok.extern.slf4j.Slf4j;
@@ -10,8 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 @Slf4j
 @RequestMapping("/meetings")
@@ -26,30 +31,70 @@ public class MeetingController {
       final MeetingDto meetingDto, final MultipartFile pic_url)
      */
     // TODO: 삭제
-    OwnerDto ownerDto = new OwnerDto(5, "owner's profileImg", "닉네임", Gender.FEMALE
-);
+    OwnerDto ownerDto = new OwnerDto(5, "owner's profileImg", "닉네임", Gender.FEMALE);
 
     @Autowired
     MeetingService meetingService;
+
+    @Autowired
+    private S3FileUploadService s3FileUploadService;
     /* Auth - 진행중 */
 
 
-    /* 참여자 List 가져오기 */
-    /* 글 삭제 - 진행중 */
-    /* 글 작성 - TODO: 진행중 */
 
+    /* 글 작성 - TODO: 진행중 */
+    // TODO: 여러개 이미지 받아오는 것...
 //    @Auth
-//    @PostMapping("")
-//    public ResponseEntity saveMeeting(
-//            @RequestHeader(value = "Authorization") final String header,
-//            final MeetingDto meetingDto, final MultipartFile pic_url) {
-//
-//            try {
-//                return null;
-//            } catch (Exception e){
-//                return null;
-//            }
-//    }
+    @PostMapping(value = "")
+    public ResponseEntity saveMeeting(
+            @RequestHeader(value = "Authorization") final String header,
+            MeetingDetailDto meetingDetailDto,
+            @RequestPart(value = "file", required = false)
+            MultipartFile img
+    ) {
+        DefaultResponse<MeetingDetailDto> defaultResponse;
+        try {
+
+            // TODO: Auth, MeetingDto.setOwnerIdx()
+            // 유저정보 저장
+            // meetingDetailDto = findUser(meetingDetailDto);
+
+            String imgUrl = s3FileUploadService.upload(img);
+
+            // 이 사진 저장할 때 meeting Entity에서 저장
+//            MeetingImgsDto meetingImgsDto = new MeetingImgsDto(imgUrl);
+//            List<MeetingImgsDto> meetingImgsDtoList = new ArrayList<>();
+//            meetingImgsDtoList.add(meetingImgsDto);
+
+            // DetailDto 에서 endDate, endTime을 LocalDateTime으로 변경
+            meetingDetailDto.setEndDayOfWeek(meetingDetailDto.getEndDate().getDayOfWeek().getDisplayName(
+                    TextStyle.FULL, Locale.KOREAN));
+            // img List 설정
+            meetingDetailDto.setImgUrl(imgUrl);
+
+//             save Service 호출
+            defaultResponse
+                    = meetingService.save(meetingDetailDto);
+
+            return new ResponseEntity(defaultResponse, HttpStatus.OK);
+        } catch (Exception e){
+            defaultResponse = DefaultResponse.res("fail", ResponseMessage.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(defaultResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /* 참여자 List 가져오기 */
+
+
+    /* 글 삭제 - 진행중 */
+    @DeleteMapping("")
+    public ResponseEntity delete(){
+        try {
+            return null;
+        } catch (Exception e){
+            return null;
+        }
+    }
 
 
     /* 상세 조회 부분 - Owner 받아오는 부분 */

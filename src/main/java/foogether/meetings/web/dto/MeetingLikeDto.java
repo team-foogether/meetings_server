@@ -2,12 +2,14 @@ package foogether.meetings.web.dto;
 
 import foogether.meetings.domain.Entity.Meeting;
 import foogether.meetings.domain.Entity.MeetingLike;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 
-@Getter
+@Data
 @NoArgsConstructor
 public class MeetingLikeDto {
     private int idx;

@@ -1,13 +1,22 @@
 package foogether.meetings.service;
 
+import com.sun.org.apache.xpath.internal.operations.Mult;
 import foogether.meetings.domain.Address;
 import foogether.meetings.domain.Entity.Meeting;
 import foogether.meetings.domain.Gender;
 import foogether.meetings.web.dto.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import java.util.List;
 
 public interface MeetingService {
+
+    /* 게시글 등록 */
+//    DefaultResponse save(
+//            MultipartHttpServletRequest request) throws Exception;
+    DefaultResponse save(
+            MeetingDetailDto meetingDetailDto) throws Exception;
 
     /* 특정 게시글 조회 */
     // 모집 완료 요청
@@ -27,7 +36,7 @@ public interface MeetingService {
 
     /* 전체 게시글 조회 */
     // Img 조회
-    List<MeetingImgsDto> findImgsByMeetingIdx(int meetingIdx);
+//    List<MeetingImgsDto> findImgsByMeetingIdx(Meeting meeting, int meetingIdx);
     // Entity List타입으로 먼저 반환받음
     // 전체 조회
     DefaultResponse<List<MeetingDto>> findAll(String sort) throws Exception;

@@ -4,6 +4,7 @@ import com.sun.istack.Nullable;
 import foogether.meetings.domain.Active;
 import foogether.meetings.domain.Address;
 import foogether.meetings.domain.Entity.Meeting;
+import foogether.meetings.domain.Entity.MeetingMember;
 import foogether.meetings.domain.StatusInfo;
 import jdk.net.SocketFlow;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,10 +13,14 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 @Repository
 public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
+
+//    void deleteMeetingMemberListByOwnerIdx(int ownerIdx);
+//    int countByMemberList_AndOwnerIdx(List<MeetingMember> memberList, int ownerIdx);
 
     /* 상세 조회 */
     // 특정 게시물의 삭제여부 조회

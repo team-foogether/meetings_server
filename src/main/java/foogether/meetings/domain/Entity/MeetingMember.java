@@ -21,18 +21,19 @@ public class MeetingMember {
     @Column(name="owner_idx")
     private int ownerIdx; // user_id
 
-    @Column(name="meeting_idx")
-    private int meetingIdx;
+//    @Column(name="meeting_idx")
+//    private int meetingIdx;
 
     @Enumerated(EnumType.STRING)
     @Column(name="owner_gender")
     private Gender gender;
 
+
+
     @Builder
-    public MeetingMember(int idx, int ownerIdx, int meetingIdx, Gender gender) {
-        this.idx = idx;
+    public MeetingMember(int ownerIdx, Gender gender) {
+//        this.idx = idx;
         this.ownerIdx = ownerIdx;
-        this.meetingIdx = meetingIdx;
         this.gender = gender;
     }
 }

@@ -16,6 +16,11 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url 'https://repo.spring.io/libs-milestone'}
+}
+
+ext {
+    set('springCloudVersion', "Hoxton.SR5")
 }
 
 dependencies {
@@ -32,8 +37,25 @@ dependencies {
 
 //    implementation 'org.springframework.boot:spring-boot-starter-security'
 //    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    compile 'mysql:mysql-connector-java'
+
+    // aws
+//    compile group: 'org.springframework.cloud', name: 'spring-cloud-aws-context', version: '1.2.1.RELEASE'
+//    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-aws', version: '2.0.1.RELEASE'
+//    compile group: 'org.springframework.cloud', name: 'spring-cloud-aws-autoconfigure', version: '1.2.1.RELEASE'
+//    implementation 'com.amazonaws:aws-java-sdk-s3'
+    implementation 'org.springframework.cloud:spring-cloud-starter-aws'
+//    implementation 'org.springframework.cloud:spring-cloud-aws-autoconfigure'
+    implementation 'org.springframework.cloud:spring-cloud-aws-core'
+
+
 }
 
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
 test {
     useJUnitPlatform()
 }

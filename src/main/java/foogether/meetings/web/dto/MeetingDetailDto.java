@@ -2,20 +2,16 @@ package foogether.meetings.web.dto;
 
 import foogether.meetings.domain.*;
 import foogether.meetings.domain.Entity.Meeting;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import org.apache.catalina.User;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
+import foogether.meetings.domain.Entity.MeetingMember;
+import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.*;
-import java.security.acl.Owner;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@Getter
+@Data
 @NoArgsConstructor
 public class MeetingDetailDto {
         private int idx;
@@ -29,13 +25,24 @@ public class MeetingDetailDto {
         // 전체 보기에서 나오는 하나의 Image
         // MeetingImgs 에서는 여러개의 Image
 //        private String imgUrl;
-        private List<MeetingImgsDto> imgUrlList;
+        private String imgUrl;
 
         // DateInfo
-        private DateInfo endDate;
+//        private DateInfo endDate;
+        @DateTimeFormat(pattern = "yyyy-MM-dd")
+        private LocalDate endDate;
+        @DateTimeFormat(pattern = "kk:mm:ss")
+        private LocalTime endTime;
+        private String endDayOfWeek;
+
         private String title;
         private String content;
-        private Address address;
+
+//        private Address address;
+        private String firstAddr;
+        private String secondAddr;
+        private String thirdAddr;
+
 
         private StatusInfo status;
         private int manMax;
@@ -53,55 +60,32 @@ public class MeetingDetailDto {
         // 참석 중인지
         private boolean isJoin;
 
+        // metingList
+        private List<MeetingMemberDto> meetingMemberDtoList;
 
-    public void setOwnerProfileImg(String ownerProfileImg) {
-        this.ownerProfileImg = ownerProfileImg;
-    }
-
-    public void setOwnerNickname(String ownerNickname) {
-        this.ownerNickname = ownerNickname;
-    }
-
-    public void setOwnerGender(Gender ownerGender) {
-        this.ownerGender = ownerGender;
-    }
-
-    public void setStatus(StatusInfo status) {
-        this.status = status;
-    }
-
-    public void setAuth(boolean auth) { this.auth = auth; }
-    public void setLike(boolean like) { this.isLike = like; }
-
-    public void setManNum(int manNum) {
-        this.manNum = manNum;
-    }
-
-    public void setFemNum(int femNum) {
-        this.femNum = femNum;
-    }
-
-    public void setJoin(boolean isJoin) {
-        this.isJoin = isJoin;
-    }
-
-    public void setImgUrlList(List<MeetingImgsDto> imgUrlList) {
-        this.imgUrlList = imgUrlList;
-    }
 
     // Repository에서 entity -> dto로 바꿔주는 작업
     public MeetingDetailDto(Meeting entity) {
         this.idx = entity.getIdx();
         this.ownerIdx = entity.getOwnerIdx();
 //        this.imgUrl = entity.getImgUrl();
-        this.endDate = entity.getEndDate();
+
+//        this.endDate = entity.getEndDate();
+        this.endDate = entity.getEndDate().getMeeting_endDate();
+        this.endTime = entity.getEndDate().getMeeting_endTime();
+        this.endDayOfWeek = entity.getEndDate().getMeeting_endDayOfWeek();
+        this.firstAddr = entity.getAddress().getFirstAddr();
+        this.secondAddr = entity.getAddress().getSecondAddr();
+        this.thirdAddr = entity.getAddress().getThirdAddr();
         this.title = entity.getTitle();
         this.content = entity.getContent();
-        this.address = entity.getAddress();
+        this.imgUrl = entity.getImgUrl();
+//        this.address = entity.getAddress();
         this.status = entity.getStatus();
         this.manMax = entity.getManMax();
         this.femMax = entity.getFemMax();
         this.active = entity.getActive();
+//        this.imgUrlList = entity.getFileInfoList();
     }
 
 
@@ -109,18 +93,46 @@ public class MeetingDetailDto {
         // 먼저 Build로 선언할 것들 선언
         // Meeting Entity 지정
         public Meeting toEntity() {
-            return Meeting.builder()
-                    .idx(this.idx)
-                    .active(this.active)
-                    .content(this.content)
-                    .endDate(this.endDate)
-                    .femMax(this.femMax)
-                    .manMax(this.manMax)
-//                    .imgUrl(this.imgUrl)
-                    .status(this.status)
-                    .title(this.title)
-                    .ownerIdx(this.ownerIdx)
-                    .address(this.address)
-                    .build();
+            if(meetingMemberDtoList != null){
+                return Meeting.builder()
+                        .idx(this.idx)
+                        .active(this.active)
+                        .content(this.content)
+                        .endDate(new DateInfo(this.endDate, this.endTime, this.endDayOfWeek))
+                        .femMax(this.femMax)
+                        .manMax(this.manMax)
+                        .imgUrl(this.imgUrl)
+//                        .fileInfoList(this.imgUrl.stream().map(imgsDto -> new MeetingImgs(this.idx, imgsDto.getImgUrl())).collect(Collectors.toList()))
+                        .status(this.status)
+                        .title(this.title)
+                        .ownerIdx(this.ownerIdx)
+                        .address(new Address(this.firstAddr, this.secondAddr, this.thirdAddr))
+                        .meetingMemberList(
+                                this.meetingMemberDtoList.stream().map(
+                                        meetingMember -> new MeetingMember(meetingMember.getOwnerIdx(), meetingMember.getGender())
+                                ).collect(Collectors.toList()))
+//                    .address(this.address)
+                        .build();
+            }
+            else {
+                return Meeting.builder()
+                        .idx(this.idx)
+                        .active(this.active)
+                        .content(this.content)
+                        .endDate(new DateInfo(this.endDate, this.endTime, this.endDayOfWeek))
+                        .femMax(this.femMax)
+                        .manMax(this.manMax)
+                        .imgUrl(this.imgUrl)
+//                        .fileInfoList(this.imgUrl.stream().map(imgsDto -> new MeetingImgs(idx, imgsDto.getImgUrl())).collect(Collectors.toList()))
+                        .status(this.status)
+                        .title(this.title)
+                        .ownerIdx(this.ownerIdx)
+                        .address(new Address(this.firstAddr, this.secondAddr, this.thirdAddr))
+//                    .address(this.address)
+                        .build();
+            }
+
         }
+
+
 }

@@ -2,12 +2,17 @@ package foogether.meetings.web.dto;
 
 import foogether.meetings.domain.*;
 import foogether.meetings.domain.Entity.Meeting;
+import lombok.Data;
 import lombok.Getter;
+import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
-@Getter
+@Data
 public class MeetingDto {
+    // TODO: MeetingDetail Dto에 따라 변수 타입 바꾸기
     // meetingIdx를 공유
     private int idx;
 
@@ -18,10 +23,17 @@ public class MeetingDto {
     private String imgUrl;
 
     // DateInfo
-    private DateInfo endDate;
+//    private DateInfo endDate;
+    private LocalDate endDate;
+    private LocalTime endTime;
+    private String endDayOfWeek;
+
     private String title;
 //    private String content;
-    private Address address;
+//    private Address address;
+    private String firstAddr;
+    private String secondAddr;
+    private String thirdAddr;
 
     private StatusInfo status;
     private int manMax;
@@ -31,63 +43,21 @@ public class MeetingDto {
     // 활동중인 회원이 작성한 글인지 확인
     private Active active;
 
-//    // entity -> dto 한 후 Controller나 Service에서 작업
-//    // 권한(작성자인지)
-//    private boolean auth;
-//    // 좋아요한 작품인지
-//    private boolean isLike;
-//    // 참석 중인지
-//    private boolean isJoin;
 
-
-//    public void setOwnerProfileImg(String ownerProfileImg) {
-//        this.ownerProfileImg = ownerProfileImg;
-//    }
-//
-//    public void setOwnerNickname(String ownerNickname) {
-//        this.ownerNickname = ownerNickname;
-//    }
-//
-//    public void setOwnerGender(Gender ownerGender) {
-//        this.ownerGender = ownerGender;
-//    }
-
-    public void setStatus(StatusInfo status) {
-        this.status = status;
-    }
-
-    public void setImgUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
-    }
-
-    //    public void setAuth(boolean auth) { this.auth = auth; }
-//    public void setLike(boolean like) { this.isLike = like; }
-
-    public void setManNum(int manNum) {
-        this.manNum = manNum;
-    }
-
-    public void setFemNum(int femNum) {
-        this.femNum = femNum;
-    }
-
-
-//    public void setJoin(boolean isJoin) {
-//        this.isJoin = isJoin;
-//    }
-//
-//    public void setImgUrlList(List<MeetingImgsDto> imgUrlList) {
-//        this.imgUrlList = imgUrlList;
-//    }
 
     // Repository에서 entity -> dto로 바꿔주는 작업
     public MeetingDto(Meeting entity) {
         this.idx = entity.getIdx();
         this.ownerIdx = entity.getOwnerIdx();
-        this.endDate = entity.getEndDate();
+        this.endDate = entity.getEndDate().getMeeting_endDate();
+        this.endTime = entity.getEndDate().getMeeting_endTime();
+        this.endDayOfWeek = entity.getEndDate().getMeeting_endDayOfWeek();
         this.title = entity.getTitle();
 //        this.content = entity.getContent();
-        this.address = entity.getAddress();
+//        this.address = entity.getAddress();
+        this.firstAddr = entity.getAddress().getFirstAddr();
+        this.secondAddr = entity.getAddress().getSecondAddr();
+        this.thirdAddr = entity.getAddress().getThirdAddr();
         this.status = entity.getStatus();
         this.manMax = entity.getManMax();
         this.femMax = entity.getFemMax();
@@ -103,12 +73,12 @@ public class MeetingDto {
                 .idx(this.idx)
                 .active(this.active)
 //                .content(this.content)
-                .endDate(this.endDate)
+                .endDate(new DateInfo(this.endDate, this.endTime, this.endDayOfWeek))
                 .femMax(this.femMax)
                 .manMax(this.manMax)
                 .status(this.status)
                 .title(this.title)
-                .address(this.address)
+                .address(new Address(this.firstAddr, this.secondAddr, this.thirdAddr))
                 .build();
     }
 }
