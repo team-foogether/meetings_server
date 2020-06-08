@@ -84,6 +84,12 @@ public class Meeting {
         this.status = this.status == null ? StatusInfo.RECRUITING : this.status;
     }
 
+    @PreUpdate
+    public void preUpdate() {
+        this.active = this.active == null ? Active.ACTIVE : this.active;
+        this.status = this.status == null ? StatusInfo.RECRUITING : this.status;
+    }
+
     // 나중에 추가
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "meeting_idx")

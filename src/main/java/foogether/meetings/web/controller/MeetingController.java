@@ -41,8 +41,29 @@ public class MeetingController {
     /* Auth - 진행중 */
 
 
+    /* 글 삭제 */
+    @DeleteMapping(value = "/{meetingIdx}")
+    public ResponseEntity deleteMeeting(
+            @RequestHeader(value = "Authorization") final String header,
+            @PathVariable("meetingIdx") int meetingIdx
+    ) {
+        DefaultResponse<MeetingDetailDto> defaultResponse;
+        try {
 
-    /* 글 작성 - TODO: 진행중 */
+
+
+            // Auth 확인 및 Service 호출
+            defaultResponse
+                    = meetingService.deleteMeeting(meetingIdx);
+
+            return new ResponseEntity(defaultResponse, HttpStatus.OK);
+        } catch (Exception e){
+            defaultResponse = DefaultResponse.res("fail", ResponseMessage.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(defaultResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /* 글 작성 및 수정 - 완료 */
     // TODO: 여러개 이미지 받아오는 것...
 //    @Auth
     @PostMapping(value = "")
@@ -74,7 +95,7 @@ public class MeetingController {
 
 //             save Service 호출
             defaultResponse
-                    = meetingService.save(meetingDetailDto);
+                    = meetingService.saveMeeting(meetingDetailDto);
 
             return new ResponseEntity(defaultResponse, HttpStatus.OK);
         } catch (Exception e){

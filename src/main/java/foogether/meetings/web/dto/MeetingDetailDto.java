@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 public class MeetingDetailDto {
         private int idx;
+        private int meetingIdx;
 
         // 작성자 정보
         private int ownerIdx; // user_id

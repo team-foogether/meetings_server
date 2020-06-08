@@ -12,12 +12,11 @@ import java.util.List;
 
 public interface MeetingService {
 
-    /* 게시글 수정 */
-    DefaultResponse modify(MeetingDto meetingDto) throws Exception;
-    /* 게시글 등록 */
-//    DefaultResponse save(
-//            MultipartHttpServletRequest request) throws Exception;
-    DefaultResponse save(
+    /* 게시글 삭제 */
+    DefaultResponse deleteMeeting(int meetingIdx);
+
+    /* 게시글 등록 및 수정 */
+    DefaultResponse saveMeeting(
             MeetingDetailDto meetingDetailDto) throws Exception;
 
     /* 특정 게시글 조회 */

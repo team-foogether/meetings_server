@@ -41,17 +41,22 @@ public class MeetingServiceImpl implements MeetingService {
 
     /* User정보 조회 */
 
-    /* 게시글 수정 */
+
+    /* 게시글 삭제 */
     @Transactional
     @Override
-    public DefaultResponse modify(MeetingDto meetingDto) throws Exception {
-        return null;
+    public DefaultResponse deleteMeeting(int meetingIdx) {
+        Meeting meeting = meetingRepository.findByIdx(meetingIdx);
+        MeetingDetailDto meetingDetailDto = new MeetingDetailDto(meeting);
+        meetingDetailDto.setActive(Active.UNACTIVE);
+        meetingRepository.save(meetingDetailDto.toEntity());
+        return DefaultResponse.res("success", ResponseMessage.DELETE_CONTENT);
     }
 
-    /* 게시글 등록 */
+    /* 게시글 등록 및 수정*/
     @Transactional
     @Override
-    public DefaultResponse save(
+    public DefaultResponse saveMeeting(
             MeetingDetailDto meetingDetailDto) throws Exception {
         // meetingDetailDto의 meetingIdx가지고 Img저장
 //        // 이미지 파일 처리
@@ -62,12 +67,23 @@ public class MeetingServiceImpl implements MeetingService {
 //            meetingDetailDto.setImgUrlList(files);
 //        }
 
-        // 그저 save...
-        meetingRepository.save(meetingDetailDto.toEntity());
+
         if(meetingDetailDto.getIdx() == 0) {
+            // 그저 save...
+            meetingRepository.save(meetingDetailDto.toEntity());
             return DefaultResponse.res("success", ResponseMessage.CREATE_CONTENT);
         } else {
-            return DefaultResponse.res("success", ResponseMessage.UPDATE_CONTENT);
+            Meeting meeting = meetingRepository.findByIdx(meetingDetailDto.getIdx());
+            if(meeting == null){    // idx 없는데 수정 요청 한 거임
+                return DefaultResponse.res("success", ResponseMessage.FAIL_CREATE_CONTENT);
+            }
+            if(meeting.getActive() == Active.ACTIVE) {
+                // 그저 save...
+                meetingRepository.save(meetingDetailDto.toEntity());
+                return DefaultResponse.res("success", ResponseMessage.UPDATE_CONTENT);
+            }
+            return DefaultResponse.res("fail", ResponseMessage.FAIL_UPDATE_CONTENT);
+
         }
     }
 
