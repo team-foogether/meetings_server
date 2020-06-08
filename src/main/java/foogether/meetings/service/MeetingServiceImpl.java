@@ -12,6 +12,7 @@ import foogether.meetings.repository.MeetingMemberRepository;
 import foogether.meetings.repository.MeetingRepository;
 import foogether.meetings.utils.ResponseMessage;
 import foogether.meetings.web.dto.*;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +41,12 @@ public class MeetingServiceImpl implements MeetingService {
 
     /* User정보 조회 */
 
-
+    /* 게시글 수정 */
+    @Transactional
+    @Override
+    public DefaultResponse modify(MeetingDto meetingDto) throws Exception {
+        return null;
+    }
 
     /* 게시글 등록 */
     @Transactional
@@ -159,7 +165,7 @@ public class MeetingServiceImpl implements MeetingService {
 
         // member 추가
         List<MeetingMemberDto> meetingMemberList = meetingMembers.stream().map(
-                meetingMember1 -> new MeetingMemberDto(meetingMember1)
+                MeetingMemberDto::new
         ).collect(Collectors.toList());
         meetingMemberList.add(meetingMemberDto);
 
@@ -172,35 +178,6 @@ public class MeetingServiceImpl implements MeetingService {
         return DefaultResponse.res("success",
                 ResponseMessage.JOIN_MEETING,
                 meetingMemberDto.getMeetingIdx());
-
-
-
-//        MeetingMember meetingMember = meetingMemberRepository.findByMeetingIdxAndOwnerIdx(
-//                meetingMemberDto.getMeetingIdx(), meetingMemberDto.getOwnerIdx()
-//        );
-
-//        if (i == 0){
-////        if(meetingMember == null){
-//            List<MeetingMemberDto> meetingMemberList = meeting.getMemberList().stream().map(
-//                    meetingMember -> new MeetingMemberDto(meetingMember)
-//            ).collect(Collectors.toList());
-//
-//            MeetingMemberListDto meetingMemberListDtoList = new MeetingMemberListDto();
-//            meetingMemberListDtoList.setMeetingMemberDtos(meetingMemberList);
-//
-//            meetingRepository.save(meetingMemberListDtoList.toEntity());
-//            // meetingIdx 반환
-//            return DefaultResponse.res("success",
-//                    ResponseMessage.JOIN_MEETING,
-//                    meetingMemberDto.getMeetingIdx());
-//        } else {
-//            meetingRepository.deleteMeetingMemberListByOwnerIdx(meeting.getOwnerIdx());
-////            meetingMemberRepository.delete(meetingMember);
-//            // meetingIdx 반환
-//            return DefaultResponse.res("success",
-//                    ResponseMessage.OUT_MEETING,
-//                    meetingMemberDto.getMeetingIdx());
-//        }
 
 
     }
@@ -251,17 +228,23 @@ public class MeetingServiceImpl implements MeetingService {
             meetingDetailDto.setFemNum(findMemberCount(meetingDetailDto.getIdx(),Gender.FEMALE));
             meetingDetailDto.setManNum(findMemberCount(meetingDetailDto.getIdx(), Gender.MALE));
 
+            List<MeetingMember> meetingMembers = meeting.getMemberList();
             //참여 여부
-            for(MeetingMember meetingMember : meeting.getMemberList()){
+            for(MeetingMember meetingMember : meetingMembers){
                 if(meetingMember.getOwnerIdx() == ownerDto.getOwnerIdx()){
                     meetingDetailDto.setJoin(true);
                 }
             }
-//            MeetingMember meetingMember =
-//                    meetingMemberRepository.findByMeetingIdxAndOwnerIdx(meetingIdx, ownerDto.getOwnerIdx());
-//            if(meetingMember != null) {
-//                meetingDetailDto.setJoin(true);
-//            }
+            if(meetingMembers.size() != 0) {
+                meetingDetailDto.setMeetingMemberDtoList(meetingMembers.stream().map(meetingMember ->
+                        {
+                            MeetingMemberDto meetingMemberDto = new MeetingMemberDto(meetingMember);
+                            meetingMemberDto.setMeetingIdx(meetingIdx);
+                            return meetingMemberDto;
+                        }
+                ).collect(Collectors.toList()));
+            }
+
 
             // 사진 정보 가져오기
 //            List<MeetingImgsDto> meetingImgsDtos =

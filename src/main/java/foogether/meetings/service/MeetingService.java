@@ -12,6 +12,8 @@ import java.util.List;
 
 public interface MeetingService {
 
+    /* 게시글 수정 */
+    DefaultResponse modify(MeetingDto meetingDto) throws Exception;
     /* 게시글 등록 */
 //    DefaultResponse save(
 //            MultipartHttpServletRequest request) throws Exception;

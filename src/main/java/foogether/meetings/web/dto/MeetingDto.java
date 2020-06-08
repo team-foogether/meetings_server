@@ -62,6 +62,7 @@ public class MeetingDto {
         this.manMax = entity.getManMax();
         this.femMax = entity.getFemMax();
         this.active = entity.getActive();
+        this.imgUrl = entity.getImgUrl();
     }
 
 
@@ -78,6 +79,7 @@ public class MeetingDto {
                 .manMax(this.manMax)
                 .status(this.status)
                 .title(this.title)
+                .imgUrl(this.imgUrl)
                 .address(new Address(this.firstAddr, this.secondAddr, this.thirdAddr))
                 .build();
     }

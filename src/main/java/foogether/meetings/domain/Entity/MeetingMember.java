@@ -28,11 +28,18 @@ public class MeetingMember {
     @Column(name="owner_gender")
     private Gender gender;
 
-
+    @Builder
+    public MeetingMember(int ownerIdx, Gender gender, int meetingIdx) {
+        this.idx = idx;
+//        this.meetingIdx = meetingIdx;
+        this.ownerIdx = ownerIdx;
+        this.gender = gender;
+    }
 
     @Builder
-    public MeetingMember(int ownerIdx, Gender gender) {
-//        this.idx = idx;
+    public MeetingMember(int idx, int ownerIdx, Gender gender, int meetingIdx) {
+        this.idx = idx;
+//        this.meetingIdx = meetingIdx;
         this.ownerIdx = ownerIdx;
         this.gender = gender;
     }

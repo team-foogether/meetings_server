@@ -66,26 +66,42 @@ public class MeetingDetailDto {
 
     // Repository에서 entity -> dto로 바꿔주는 작업
     public MeetingDetailDto(Meeting entity) {
-        this.idx = entity.getIdx();
-        this.ownerIdx = entity.getOwnerIdx();
-//        this.imgUrl = entity.getImgUrl();
+            this.idx = entity.getIdx();
+            this.ownerIdx = entity.getOwnerIdx();
+//            this.meetingMemberDtoList = entity.getMemberList().stream().map(
+//                    MeetingMemberDto::new
+//            ).collect(Collectors.toList());
+            this.endDate = entity.getEndDate().getMeeting_endDate();
+            this.endTime = entity.getEndDate().getMeeting_endTime();
+            this.endDayOfWeek = entity.getEndDate().getMeeting_endDayOfWeek();
+            this.firstAddr = entity.getAddress().getFirstAddr();
+            this.secondAddr = entity.getAddress().getSecondAddr();
+            this.thirdAddr = entity.getAddress().getThirdAddr();
+            this.title = entity.getTitle();
+            this.content = entity.getContent();
+            this.imgUrl = entity.getImgUrl();
+            this.status = entity.getStatus();
+            this.manMax = entity.getManMax();
+            this.femMax = entity.getFemMax();
+            this.active = entity.getActive();
+//        } else {
+//            this.idx = entity.getIdx();
+//            this.ownerIdx = entity.getOwnerIdx();
+//            this.endDate = entity.getEndDate().getMeeting_endDate();
+//            this.endTime = entity.getEndDate().getMeeting_endTime();
+//            this.endDayOfWeek = entity.getEndDate().getMeeting_endDayOfWeek();
+//            this.firstAddr = entity.getAddress().getFirstAddr();
+//            this.secondAddr = entity.getAddress().getSecondAddr();
+//            this.thirdAddr = entity.getAddress().getThirdAddr();
+//            this.title = entity.getTitle();
+//            this.content = entity.getContent();
+//            this.imgUrl = entity.getImgUrl();
+//            this.status = entity.getStatus();
+//            this.manMax = entity.getManMax();
+//            this.femMax = entity.getFemMax();
+//            this.active = entity.getActive();
+//        }
 
-//        this.endDate = entity.getEndDate();
-        this.endDate = entity.getEndDate().getMeeting_endDate();
-        this.endTime = entity.getEndDate().getMeeting_endTime();
-        this.endDayOfWeek = entity.getEndDate().getMeeting_endDayOfWeek();
-        this.firstAddr = entity.getAddress().getFirstAddr();
-        this.secondAddr = entity.getAddress().getSecondAddr();
-        this.thirdAddr = entity.getAddress().getThirdAddr();
-        this.title = entity.getTitle();
-        this.content = entity.getContent();
-        this.imgUrl = entity.getImgUrl();
-//        this.address = entity.getAddress();
-        this.status = entity.getStatus();
-        this.manMax = entity.getManMax();
-        this.femMax = entity.getFemMax();
-        this.active = entity.getActive();
-//        this.imgUrlList = entity.getFileInfoList();
     }
 
 
@@ -109,7 +125,7 @@ public class MeetingDetailDto {
                         .address(new Address(this.firstAddr, this.secondAddr, this.thirdAddr))
                         .meetingMemberList(
                                 this.meetingMemberDtoList.stream().map(
-                                        meetingMember -> new MeetingMember(meetingMember.getOwnerIdx(), meetingMember.getGender())
+                                        meetingMember -> new MeetingMember(meetingMember.getOwnerIdx(), meetingMember.getGender(), meetingMember.getMeetingIdx())
                                 ).collect(Collectors.toList()))
 //                    .address(this.address)
                         .build();
