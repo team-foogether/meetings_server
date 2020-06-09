@@ -90,7 +90,7 @@ public class Meeting {
         this.status = this.status == null ? StatusInfo.RECRUITING : this.status;
     }
 
-    // 나중에 추가
+
     @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "meeting_idx")
     private List<MeetingMember> memberList;

@@ -20,6 +20,7 @@ public class MeetingDto {
     private int ownerIdx; // user_id
 
     // 한개의 Images // TODO: multipart
+
     private String imgUrl;
 
     // DateInfo

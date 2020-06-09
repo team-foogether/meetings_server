@@ -1,10 +1,11 @@
 package foogether.meetings.web.dto;
 
 import foogether.meetings.domain.Gender;
+import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@Getter
+@Data
 public class OwnerDto {
     // 후에 토큰 적용해서 Idx 및 ProfileImg, Nickname 저장
     private int ownerIdx;

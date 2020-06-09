@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import static foogether.meetings.web.dto.DefaultResponse.FAIL_DEFAULT_RES;
+
 @Slf4j
 @RequestMapping("/meetings")
 @RestController
@@ -58,8 +60,7 @@ public class MeetingController {
 
             return new ResponseEntity(defaultResponse, HttpStatus.OK);
         } catch (Exception e){
-            defaultResponse = DefaultResponse.res("fail", ResponseMessage.INTERNAL_SERVER_ERROR);
-            return new ResponseEntity<>(defaultResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -70,7 +71,7 @@ public class MeetingController {
     public ResponseEntity saveMeeting(
             @RequestHeader(value = "Authorization") final String header,
             MeetingDetailDto meetingDetailDto,
-            @RequestPart(value = "file", required = false)
+            @RequestPart(value = "file", required = true)
             MultipartFile img
     ) {
         DefaultResponse<MeetingDetailDto> defaultResponse;
@@ -99,24 +100,9 @@ public class MeetingController {
 
             return new ResponseEntity(defaultResponse, HttpStatus.OK);
         } catch (Exception e){
-            defaultResponse = DefaultResponse.res("fail", ResponseMessage.INTERNAL_SERVER_ERROR);
-            return new ResponseEntity<>(defaultResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    /* 참여자 List 가져오기 */
-
-
-    /* 글 삭제 - 진행중 */
-    @DeleteMapping("")
-    public ResponseEntity delete(){
-        try {
-            return null;
-        } catch (Exception e){
-            return null;
-        }
-    }
-
 
     /* 상세 조회 부분 - Owner 받아오는 부분 */
     /* 모집 완료 - 진행중 */
@@ -140,8 +126,7 @@ public class MeetingController {
             defaultResponse = meetingService.postComplete(meetingIdx, ownerDto);
             return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
         } catch (Exception e) {
-            defaultResponse = DefaultResponse.res("fail", ResponseMessage.INTERNAL_SERVER_ERROR);
-            return new ResponseEntity<>(defaultResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -162,8 +147,7 @@ public class MeetingController {
             defaultResponse =  meetingService.postLikeState(meetingLikeDto);
             return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
         } catch (Exception e){
-            defaultResponse = DefaultResponse.res("fail", ResponseMessage.INTERNAL_SERVER_ERROR);
-            return new ResponseEntity<>(defaultResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -184,8 +168,7 @@ public class MeetingController {
             defaultResponse =  meetingService.postJoinState(meetingMemberDto);
             return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
         } catch (Exception e){
-            defaultResponse = DefaultResponse.res("fail", ResponseMessage.INTERNAL_SERVER_ERROR);
-            return new ResponseEntity<>(defaultResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -210,8 +193,7 @@ public class MeetingController {
             return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
 
         }catch (Exception e){
-            defaultResponse = DefaultResponse.res("fail", ResponseMessage.INTERNAL_SERVER_ERROR);
-            return new ResponseEntity<>(defaultResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -247,8 +229,7 @@ public class MeetingController {
             return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
 
         } catch (Exception e) {
-            defaultResponse = DefaultResponse.res("fail", ResponseMessage.INTERNAL_SERVER_ERROR);
-            return new ResponseEntity<>(defaultResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -286,8 +267,7 @@ public class MeetingController {
             return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
 
         } catch (Exception e) {
-            defaultResponse = DefaultResponse.res("fail", ResponseMessage.INTERNAL_SERVER_ERROR);
-            return new ResponseEntity<>(defaultResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
