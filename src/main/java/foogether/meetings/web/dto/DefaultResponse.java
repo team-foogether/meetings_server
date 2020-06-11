@@ -4,10 +4,12 @@ import foogether.meetings.utils.ResponseMessage;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class DefaultResponse<T> {
     // "success", "fail"
     private String result;

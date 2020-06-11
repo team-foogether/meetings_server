@@ -123,7 +123,8 @@ public class MeetingController {
             // 권한이 있는 경우
 //            DefaultResponse<MeetingDto> meetingDto = meetingService.findByIdx(meetingIdx, ownerDto);
 
-            defaultResponse = meetingService.postComplete(meetingIdx, ownerDto);
+//            defaultResponse = meetingService.postComplete(meetingIdx, ownerDto);
+            defaultResponse = meetingService.postComplete(meetingIdx);
             return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);

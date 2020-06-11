@@ -49,6 +49,9 @@ dependencies {
 //    implementation 'org.springframework.cloud:spring-cloud-aws-autoconfigure'
     implementation 'org.springframework.cloud:spring-cloud-aws-core'
 
+    compile group: 'org.springframework.cloud', name: 'spring-cloud-starter-openfeign', version: '2.1.1.RELEASE'
+
+
 
 }
 

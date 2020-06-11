@@ -1,5 +1,6 @@
 package foogether.meetings.service;
 
+import foogether.meetings.client.UserClient;
 import foogether.meetings.domain.Active;
 import foogether.meetings.domain.Address;
 import foogether.meetings.domain.Entity.Meeting;
@@ -15,10 +16,14 @@ import foogether.meetings.web.dto.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import javax.xml.ws.Response;
+import java.security.acl.Owner;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,6 +38,9 @@ public class MeetingServiceImpl implements MeetingService {
     private final MeetingLikeRepository meetingLikeRepository;
     @Autowired
     private final MeetingMemberRepository meetingMemberRepository;
+
+    @Autowired
+    private final UserClient userClient;
 //    @Autowired
 //    private final MeetingImgsRepository meetingImgsRepository;
 //    @Autowired
@@ -92,7 +100,10 @@ public class MeetingServiceImpl implements MeetingService {
     // 모집 완료 요청
     @Transactional
     @Override
-    public DefaultResponse<Integer> postComplete(int meetingIdx, OwnerDto ownerDto) {
+//    public DefaultResponse<Integer> postComplete(int meetingIdx, OwnerDto ownerDto) {
+    public DefaultResponse<Integer> postComplete(int meetingIdx) {
+        String token = "token";
+        ResponseEntity<DefaultResponse<UserResponseDto>> ownerDto = userClient.getUserInfo(token);
         Meeting meeting = meetingRepository.findByIdx(meetingIdx);
         if(meeting == null || meeting.getActive().equals(Active.UNACTIVE)){ // UNACTIVE인 경우 반환
             return DefaultResponse.res("fail",

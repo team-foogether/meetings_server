@@ -21,7 +21,8 @@ public interface MeetingService {
 
     /* 특정 게시글 조회 */
     // 모집 완료 요청
-    DefaultResponse<Integer> postComplete(int meetingIdx, OwnerDto ownerDto);
+//    DefaultResponse<Integer> postComplete(int meetingIdx, OwnerDto ownerDto);
+    DefaultResponse<Integer> postComplete(int meetingIdx);
 
     // 좋아요 요청 및 취소
     DefaultResponse<Integer> postLikeState(MeetingLikeDto meetingLikeDto);
