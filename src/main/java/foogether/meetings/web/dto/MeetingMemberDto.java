@@ -28,9 +28,6 @@ public class MeetingMemberDto {
 
     public MeetingMemberDto(UserResponseDto data) {
         this.ownerIdx = data.getIdx();
-//        this.emailAddr = data.getEmailAddr();
-//        this.name = data.getName();
-//        this.phoneNum = data.getPhoneNum();
         this.nickname = data.getNickname();
         this.profileImg = data.getProfileImg();
         this.gender = data.getGender();

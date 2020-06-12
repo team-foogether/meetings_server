@@ -120,40 +120,87 @@ public class MeetingController {
         }
     }
 
+//    /* 찜하기 완료 */
+//    // Auth 필요 없음
+//    @PostMapping("/{meetingIdx}/like")
+//    public ResponseEntity likeMeeting(
+//            @RequestBody MeetingLikeDto meetingLikeDto) {
+//
+//        DefaultResponse<Integer> defaultResponse;
+//        try {
+//            // meetingIdx 반환
+//            defaultResponse =  meetingService.postLikeState(meetingLikeDto);
+//            return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
+//        } catch (Exception e){
+//            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+
+//    /* 참여하기 - Auth 빼고 완료 */
+//    //TODO: Auth 추가
+//    // @Auth
+//    // int는 게시판 번호 리턴
+//    @PostMapping("/join")
+//    public ResponseEntity joinMeeting(
+//            @RequestHeader(value = "Authorization", required = false) final String header,
+//            @RequestBody MeetingMemberDto meetingMemberDto) {
+//
+//        DefaultResponse<Integer> defaultResponse;
+//        try {
+//            // Auth 확인
+//
+//            // meetingIdx 반환
+//            defaultResponse =  meetingService.postJoinState(meetingMemberDto, header);
+//            return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
+//        } catch (Exception e){
+//            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+
     /* 찜하기 완료 */
     // Auth 필요 없음
-    @PostMapping("/like")
+    @PostMapping("/{meetingIdx}/like")
     public ResponseEntity likeMeeting(
-            @RequestBody MeetingLikeDto meetingLikeDto) {
+            @RequestHeader(value = "Authorization", required = true) final String header,
+            @PathVariable("meetingIdx") int meetingIdx) {
 
         DefaultResponse<Integer> defaultResponse;
-        try {
-            // meetingIdx 반환
-            defaultResponse =  meetingService.postLikeState(meetingLikeDto);
-            return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
-        } catch (Exception e){
-            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        if(jwtService.decode(header).getUserIdx() != -1) {
+            try {
+                // meetingIdx 반환
+                defaultResponse = meetingService.postLikeState(meetingIdx, header);
+                return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
+            } catch (Exception e) {
+                return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.UNAUTHORIZED);
         }
     }
 
-    /* 참여하기 - Auth 빼고 완료 */
+    /* 참여하기 - Auth 추가중*/
     //TODO: Auth 추가
     // @Auth
     // int는 게시판 번호 리턴
-    @PostMapping("/join")
+    @PostMapping("/{meetingIdx}/join")
     public ResponseEntity joinMeeting(
-            @RequestHeader(value = "Authorization", required = false) final String header,
-            @RequestBody MeetingMemberDto meetingMemberDto) {
+            @RequestHeader(value = "Authorization", required = true) final String header,
+            @PathVariable("meetingIdx") int meetingIdx) {
 
         DefaultResponse<Integer> defaultResponse;
-        try {
-            // Auth 확인
 
-            // meetingIdx 반환
-            defaultResponse =  meetingService.postJoinState(meetingMemberDto);
-            return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
-        } catch (Exception e){
-            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+        if(jwtService.decode(header).getUserIdx() != -1) {
+            try {
+                // Auth 확인
+
+                // meetingIdx 반환
+                defaultResponse = meetingService.postJoinState(meetingIdx, header);
+                return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
+            } catch (Exception e) {
+                return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.UNAUTHORIZED);
         }
     }
 
@@ -167,10 +214,6 @@ public class MeetingController {
 
         try{
             // Writer 정보 조회하는 service 또는 Controller에서 api를 통해 호출해서 작성자 ProfileImg, nickname 저장
-            // TODO : TOKEN 통해 Owner 정보 가져오기(owenrId == decode(token))
-            // TODO: <- 다른 서비스에서 Owner 정보 갖고와야 함
-//            OwnerDto ownerDto = new OwnerDto(5, "owner's profileImg", "닉네임", Gender.F);
-
             // 상세 조회 값 가져오기
             defaultResponse = meetingService.findByIdx(meetingIdx, header);
 

@@ -62,10 +62,7 @@ public class MeetingDetailDto {
         private boolean isJoin;
 
         // meetingList
-        private List<MeetingMemberDto> meetingMemberDtoList;
-
-        // memberInfoList
-        private List<MeetingMemberDto> meetingMemberResponseDtos;
+        private List<MeetingMemberDto> meetingMemberList;
 
     // Repository에서 entity -> dto로 바꿔주는 작업
     public MeetingDetailDto(Meeting entity) {
@@ -112,7 +109,7 @@ public class MeetingDetailDto {
         // 먼저 Build로 선언할 것들 선언
         // Meeting Entity 지정
         public Meeting toEntity() {
-            if(meetingMemberDtoList != null){
+            if(meetingMemberList != null){
                 return Meeting.builder()
                         .idx(this.idx)
                         .active(this.active)
@@ -127,7 +124,7 @@ public class MeetingDetailDto {
                         .ownerIdx(this.ownerIdx)
                         .address(new Address(this.firstAddr, this.secondAddr, this.thirdAddr))
                         .meetingMemberList(
-                                this.meetingMemberDtoList.stream().map(
+                                this.meetingMemberList.stream().map(
 //                                        meetingMember -> new MeetingMember(meetingMember.getOwnerIdx(), meetingMember.getGender(), meetingMember.getMeetingIdx())
                                         meetingMember -> new MeetingMember(meetingMember.getOwnerIdx(), meetingMember.getMeetingIdx())
                                 ).collect(Collectors.toList()))

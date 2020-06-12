@@ -21,14 +21,15 @@ public interface MeetingService {
 
     /* 특정 게시글 조회 */
     // 모집 완료 요청
-//    DefaultResponse<Integer> postComplete(int meetingIdx, OwnerDto ownerDto);
     DefaultResponse<Integer> postComplete(int meetingIdx, String header);
 
     // 좋아요 요청 및 취소
-    DefaultResponse<Integer> postLikeState(MeetingLikeDto meetingLikeDto);
+//    DefaultResponse<Integer> postLikeState(MeetingLikeDto meetingLikeDto);
+    DefaultResponse<Integer> postLikeState(int meetingIdx, String header);
 
     // 참여 요청 및 취소
-    DefaultResponse<Integer> postJoinState(MeetingMemberDto meetingMemberDto);
+//    DefaultResponse<Integer> postJoinState(MeetingMemberDto meetingMemberDto, String header);
+    DefaultResponse<Integer> postJoinState(int meetingMemberDto, String header);
 
     // 참여자 수 조회
     int findMemberCount(int meetingIdx, Gender gender) throws Exception;

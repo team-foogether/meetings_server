@@ -13,18 +13,13 @@ import foogether.meetings.repository.MeetingMemberRepository;
 import foogether.meetings.repository.MeetingRepository;
 import foogether.meetings.utils.ResponseMessage;
 import foogether.meetings.web.dto.*;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
-import org.omg.CORBA.UserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import javax.xml.ws.Response;
-import java.security.acl.Owner;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -144,19 +139,26 @@ public class MeetingServiceImpl implements MeetingService {
     // 좋아요 요청 및 취소
     @Transactional
     @Override
-    public DefaultResponse<Integer> postLikeState(MeetingLikeDto meetingLikeDto) {
+    public DefaultResponse<Integer> postLikeState(int meetingIdx, String header) {
         // meeting Idx 가 ACTIVE인지 확인
-        Meeting meeting = meetingRepository.findByIdx(meetingLikeDto.getMeetingIdx());
+        Meeting meeting = meetingRepository.findByIdx(meetingIdx);
         if(meeting == null || meeting.getActive().equals(Active.UNACTIVE)){ // UNACTIVE인 경우 반환
             return DefaultResponse.res("fail",
                     ResponseMessage.READ_ALL_BUT_ZERO);
         }
 
-
+        int ownerIdx = jwtService.decode(header).getUserIdx();
         MeetingLike meetingLike = meetingLikeRepository.findByMeetingIdxAndOwnerIdx(
-                meetingLikeDto.getMeetingIdx(), meetingLikeDto.getOwnerIdx()
+                meetingIdx, ownerIdx
         );
+
+
         if(meetingLike == null){
+            MeetingLikeDto meetingLikeDto = new MeetingLikeDto();
+
+            meetingLikeDto.setMeetingIdx(meetingIdx);
+            meetingLikeDto.setOwnerIdx(ownerIdx);
+
             meetingLikeRepository.save(meetingLikeDto.toEntity());
             // meetingIdx 반환
             return DefaultResponse.res("success",
@@ -167,25 +169,87 @@ public class MeetingServiceImpl implements MeetingService {
             // meetingIdx 반환
             return DefaultResponse.res("success",
                     ResponseMessage.UNLIKE_CONTENT,
-                    meetingLikeDto.getMeetingIdx());
+                    meetingIdx);
         }
     }
 
     // 참여 요청 및 취소
+//    @Override
+//    @Transactional
+//    public DefaultResponse<Integer> postJoinState(MeetingMemberDto meetingMemberDto, String header) {
+//        // meeting Idx 가 ACTIVE인지 확인
+//        Meeting meeting = meetingRepository.findByIdx(meetingMemberDto.getMeetingIdx());
+//        if(meeting == null || meeting.getActive().equals(Active.UNACTIVE)){ // UNACTIVE인 경우 반환
+//            return DefaultResponse.res("fail",
+//                    ResponseMessage.READ_ALL_BUT_ZERO);
+//        }
+//
+//
+//        List<MeetingMember> meetingMembers = meeting.getMemberList();
+//        // MemberList 중 ownerIdx가 맞는게 있는지 찾아라
+//        for(MeetingMember meetingMember : meetingMembers){
+//            if(meetingMember.getOwnerIdx() == meetingMemberDto.getOwnerIdx()){
+//                log.info(" meetingMember Idx >>> " + meetingMember.getIdx());
+////                log.info(" meetingMember Gender >>> " + meetingMember.getGender());
+//                log.info(" meetingMember OwnerId >>> " + meetingMember.getOwnerIdx());
+//                meetingMembers.remove(meetingMember);
+//
+//                // member 추가
+//                List<MeetingMemberDto> meetingMemberList = meetingMembers.stream().map(
+//                        meetingMember1 -> new MeetingMemberDto(meetingMember1)
+//                ).collect(Collectors.toList());
+//                MeetingDetailDto meetingDetailDto = new MeetingDetailDto(meeting);
+//                meetingDetailDto.setMeetingMemberList(meetingMemberList);
+//
+////                meetingRepository.save(meetingDetailDto.toEntity());
+//                meetingMemberRepository.deleteByIdx(meetingMember.getIdx());
+//
+//                // meetingIdx 반환
+//                return DefaultResponse.res("success",
+//                        ResponseMessage.OUT_MEETING,
+//                        meetingMemberDto.getMeetingIdx());
+//            }
+//        }
+//
+//
+////            meetingMemberRepository.delete(meetingMember);
+//
+//        // member 추가
+//        List<MeetingMemberDto> meetingMemberList = meetingMembers.stream().map(
+//                MeetingMemberDto::new
+//        ).collect(Collectors.toList());
+//        meetingMemberList.add(meetingMemberDto);
+//
+//        MeetingDetailDto meetingDetailDto = new MeetingDetailDto(meeting);
+//        meetingDetailDto.setMeetingMemberList(meetingMemberList);
+//
+//
+//        meetingRepository.save(meetingDetailDto.toEntity());
+//        // meetingIdx 반환
+//        return DefaultResponse.res("success",
+//                ResponseMessage.JOIN_MEETING,
+//                meetingMemberDto.getMeetingIdx());
+//
+//
+//    }
+
+    // 참여 요청 및 취소
     @Override
     @Transactional
-    public DefaultResponse<Integer> postJoinState(MeetingMemberDto meetingMemberDto) {
+    public DefaultResponse<Integer> postJoinState(int meetingIdx, String header) {
         // meeting Idx 가 ACTIVE인지 확인
-        Meeting meeting = meetingRepository.findByIdx(meetingMemberDto.getMeetingIdx());
+        Meeting meeting = meetingRepository.findByIdx(meetingIdx);
         if(meeting == null || meeting.getActive().equals(Active.UNACTIVE)){ // UNACTIVE인 경우 반환
             return DefaultResponse.res("fail",
                     ResponseMessage.READ_ALL_BUT_ZERO);
         }
 
         List<MeetingMember> meetingMembers = meeting.getMemberList();
+        int ownerIdx = jwtService.decode(header).getUserIdx();
+
         // MemberList 중 ownerIdx가 맞는게 있는지 찾아라
         for(MeetingMember meetingMember : meetingMembers){
-            if(meetingMember.getOwnerIdx() == meetingMemberDto.getOwnerIdx()){
+            if(meetingMember.getOwnerIdx() == ownerIdx){
                 log.info(" meetingMember Idx >>> " + meetingMember.getIdx());
 //                log.info(" meetingMember Gender >>> " + meetingMember.getGender());
                 log.info(" meetingMember OwnerId >>> " + meetingMember.getOwnerIdx());
@@ -196,7 +260,7 @@ public class MeetingServiceImpl implements MeetingService {
                         meetingMember1 -> new MeetingMemberDto(meetingMember1)
                 ).collect(Collectors.toList());
                 MeetingDetailDto meetingDetailDto = new MeetingDetailDto(meeting);
-                meetingDetailDto.setMeetingMemberDtoList(meetingMemberList);
+                meetingDetailDto.setMeetingMemberList(meetingMemberList);
 
 //                meetingRepository.save(meetingDetailDto.toEntity());
                 meetingMemberRepository.deleteByIdx(meetingMember.getIdx());
@@ -204,21 +268,22 @@ public class MeetingServiceImpl implements MeetingService {
                 // meetingIdx 반환
                 return DefaultResponse.res("success",
                         ResponseMessage.OUT_MEETING,
-                        meetingMemberDto.getMeetingIdx());
+                        meetingIdx);
             }
         }
-
-
-//            meetingMemberRepository.delete(meetingMember);
 
         // member 추가
         List<MeetingMemberDto> meetingMemberList = meetingMembers.stream().map(
                 MeetingMemberDto::new
         ).collect(Collectors.toList());
+
+        MeetingMemberDto meetingMemberDto = new MeetingMemberDto();
+        meetingMemberDto.setMeetingIdx(meetingIdx);
+        meetingMemberDto.setOwnerIdx(ownerIdx);
         meetingMemberList.add(meetingMemberDto);
 
         MeetingDetailDto meetingDetailDto = new MeetingDetailDto(meeting);
-        meetingDetailDto.setMeetingMemberDtoList(meetingMemberList);
+        meetingDetailDto.setMeetingMemberList(meetingMemberList);
 
 
         meetingRepository.save(meetingDetailDto.toEntity());
@@ -313,7 +378,7 @@ public class MeetingServiceImpl implements MeetingService {
             // memberList.getData().get(int) = UserResponseDto
             // meetingDetailDto에 참석자 setting
             if(memberList.size() != 0) {
-                meetingDetailDto.setMeetingMemberDtoList(memberList.stream().map(
+                meetingDetailDto.setMeetingMemberList(memberList.stream().map(
                         meetingMember -> {
                             MeetingMemberDto meetingMemberDto = new MeetingMemberDto(meetingMember);
                             meetingMemberDto.setMeetingIdx(meetingIdx);
