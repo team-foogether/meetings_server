@@ -120,42 +120,6 @@ public class MeetingController {
         }
     }
 
-//    /* 찜하기 완료 */
-//    // Auth 필요 없음
-//    @PostMapping("/{meetingIdx}/like")
-//    public ResponseEntity likeMeeting(
-//            @RequestBody MeetingLikeDto meetingLikeDto) {
-//
-//        DefaultResponse<Integer> defaultResponse;
-//        try {
-//            // meetingIdx 반환
-//            defaultResponse =  meetingService.postLikeState(meetingLikeDto);
-//            return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
-//        } catch (Exception e){
-//            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-
-//    /* 참여하기 - Auth 빼고 완료 */
-//    //TODO: Auth 추가
-//    // @Auth
-//    // int는 게시판 번호 리턴
-//    @PostMapping("/join")
-//    public ResponseEntity joinMeeting(
-//            @RequestHeader(value = "Authorization", required = false) final String header,
-//            @RequestBody MeetingMemberDto meetingMemberDto) {
-//
-//        DefaultResponse<Integer> defaultResponse;
-//        try {
-//            // Auth 확인
-//
-//            // meetingIdx 반환
-//            defaultResponse =  meetingService.postJoinState(meetingMemberDto, header);
-//            return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
-//        } catch (Exception e){
-//            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
 
     /* 찜하기 완료 */
     // Auth 필요 없음
@@ -179,9 +143,6 @@ public class MeetingController {
     }
 
     /* 참여하기 - Auth 추가중*/
-    //TODO: Auth 추가
-    // @Auth
-    // int는 게시판 번호 리턴
     @PostMapping("/{meetingIdx}/join")
     public ResponseEntity joinMeeting(
             @RequestHeader(value = "Authorization", required = true) final String header,
