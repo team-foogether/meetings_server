@@ -13,16 +13,16 @@ import java.util.List;
 public interface MeetingService {
 
     /* 게시글 삭제 */
-    DefaultResponse deleteMeeting(int meetingIdx);
+    DefaultResponse deleteMeeting(int meetingIdx, String header);
 
     /* 게시글 등록 및 수정 */
     DefaultResponse saveMeeting(
-            MeetingDetailDto meetingDetailDto) throws Exception;
+            MeetingDetailDto meetingDetailDto, String header) throws Exception;
 
     /* 특정 게시글 조회 */
     // 모집 완료 요청
 //    DefaultResponse<Integer> postComplete(int meetingIdx, OwnerDto ownerDto);
-    DefaultResponse<Integer> postComplete(int meetingIdx);
+    DefaultResponse<Integer> postComplete(int meetingIdx, String header);
 
     // 좋아요 요청 및 취소
     DefaultResponse<Integer> postLikeState(MeetingLikeDto meetingLikeDto);
@@ -34,7 +34,7 @@ public interface MeetingService {
     int findMemberCount(int meetingIdx, Gender gender) throws Exception;
 
     // 특정 게시물 조회
-    DefaultResponse<MeetingDetailDto> findByIdx(int meetingIdx, OwnerDto ownerDto) throws Exception;
+    DefaultResponse<MeetingDetailDto> findByIdx(int meetingIdx, String header) throws Exception;
 
     /* 전체 게시글 조회 */
     // Img 조회

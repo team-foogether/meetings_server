@@ -24,23 +24,24 @@ public class MeetingMember {
 //    @Column(name="meeting_idx")
 //    private int meetingIdx;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name="owner_gender")
-    private Gender gender;
+//    @Enumerated(EnumType.STRING)
+//    @Column(name="owner_gender")
+//    private Gender gender;
 
     @Builder
-    public MeetingMember(int ownerIdx, Gender gender, int meetingIdx) {
+//    public MeetingMember(int ownerIdx, Gender gender, int meetingIdx) {
+    public MeetingMember(int ownerIdx, int meetingIdx) {
         this.idx = idx;
 //        this.meetingIdx = meetingIdx;
         this.ownerIdx = ownerIdx;
-        this.gender = gender;
+//        this.gender = gender;
     }
 
     @Builder
-    public MeetingMember(int idx, int ownerIdx, Gender gender, int meetingIdx) {
+    public MeetingMember(int idx, int ownerIdx, int meetingIdx) {
         this.idx = idx;
 //        this.meetingIdx = meetingIdx;
         this.ownerIdx = ownerIdx;
-        this.gender = gender;
+//        this.gender = gender;
     }
 }

@@ -61,9 +61,11 @@ public class MeetingDetailDto {
         // 참석 중인지
         private boolean isJoin;
 
-        // metingList
+        // meetingList
         private List<MeetingMemberDto> meetingMemberDtoList;
 
+        // memberInfoList
+        private List<MeetingMemberDto> meetingMemberResponseDtos;
 
     // Repository에서 entity -> dto로 바꿔주는 작업
     public MeetingDetailDto(Meeting entity) {
@@ -126,7 +128,8 @@ public class MeetingDetailDto {
                         .address(new Address(this.firstAddr, this.secondAddr, this.thirdAddr))
                         .meetingMemberList(
                                 this.meetingMemberDtoList.stream().map(
-                                        meetingMember -> new MeetingMember(meetingMember.getOwnerIdx(), meetingMember.getGender(), meetingMember.getMeetingIdx())
+//                                        meetingMember -> new MeetingMember(meetingMember.getOwnerIdx(), meetingMember.getGender(), meetingMember.getMeetingIdx())
+                                        meetingMember -> new MeetingMember(meetingMember.getOwnerIdx(), meetingMember.getMeetingIdx())
                                 ).collect(Collectors.toList()))
 //                    .address(this.address)
                         .build();

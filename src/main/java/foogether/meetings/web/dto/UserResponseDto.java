@@ -1,6 +1,7 @@
 package foogether.meetings.web.dto;
 
 import foogether.meetings.domain.Gender;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -23,4 +24,14 @@ public class UserResponseDto {
     // 성별
     Gender gender;
 
+
+    public UserResponseDto(UserResponseDto data) {
+        this.idx = data.getIdx();
+//        this.emailAddr = data.getEmailAddr();
+//        this.name = data.getName();
+//        this.phoneNum = data.getPhoneNum();
+        this.nickname = data.getNickname();
+        this.profileImg = data.getProfileImg();
+        this.gender = data.getGender();
+    }
 }

@@ -2,9 +2,11 @@ package foogether.meetings.web.controller;
 
 import foogether.meetings.domain.Address;
 import foogether.meetings.domain.Gender;
+import foogether.meetings.service.JwtService;
 import foogether.meetings.service.MeetingService;
 import foogether.meetings.service.S3FileUploadService;
 import foogether.meetings.utils.ResponseMessage;
+import foogether.meetings.utils.auth.Auth;
 import foogether.meetings.web.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +44,11 @@ public class MeetingController {
     private S3FileUploadService s3FileUploadService;
     /* Auth - 진행중 */
 
+    @Autowired
+    private JwtService jwtService;
 
     /* 글 삭제 */
+    @Auth
     @DeleteMapping(value = "/{meetingIdx}")
     public ResponseEntity deleteMeeting(
             @RequestHeader(value = "Authorization") final String header,
@@ -52,11 +57,9 @@ public class MeetingController {
         DefaultResponse<MeetingDetailDto> defaultResponse;
         try {
 
-
-
             // Auth 확인 및 Service 호출
             defaultResponse
-                    = meetingService.deleteMeeting(meetingIdx);
+                    = meetingService.deleteMeeting(meetingIdx, header);
 
             return new ResponseEntity(defaultResponse, HttpStatus.OK);
         } catch (Exception e){
@@ -65,8 +68,7 @@ public class MeetingController {
     }
 
     /* 글 작성 및 수정 - 완료 */
-    // TODO: 여러개 이미지 받아오는 것...
-//    @Auth
+    @Auth
     @PostMapping(value = "")
     public ResponseEntity saveMeeting(
             @RequestHeader(value = "Authorization") final String header,
@@ -74,40 +76,35 @@ public class MeetingController {
             @RequestPart(value = "file", required = true)
             MultipartFile img
     ) {
-        DefaultResponse<MeetingDetailDto> defaultResponse;
-        try {
+            DefaultResponse<MeetingDetailDto> defaultResponse;
+            try {
+                String imgUrl = s3FileUploadService.upload(img);
 
-            // TODO: Auth, MeetingDto.setOwnerIdx()
-            // 유저정보 저장
-            // meetingDetailDto = findUser(meetingDetailDto);
-
-            String imgUrl = s3FileUploadService.upload(img);
-
-            // 이 사진 저장할 때 meeting Entity에서 저장
+                // 이 사진 저장할 때 meeting Entity에서 저장
 //            MeetingImgsDto meetingImgsDto = new MeetingImgsDto(imgUrl);
 //            List<MeetingImgsDto> meetingImgsDtoList = new ArrayList<>();
 //            meetingImgsDtoList.add(meetingImgsDto);
 
-            // DetailDto 에서 endDate, endTime을 LocalDateTime으로 변경
-            meetingDetailDto.setEndDayOfWeek(meetingDetailDto.getEndDate().getDayOfWeek().getDisplayName(
-                    TextStyle.FULL, Locale.KOREAN));
-            // img List 설정
-            meetingDetailDto.setImgUrl(imgUrl);
+                // DetailDto 에서 endDate, endTime을 LocalDateTime으로 변경
+                meetingDetailDto.setEndDayOfWeek(meetingDetailDto.getEndDate().getDayOfWeek().getDisplayName(
+                        TextStyle.FULL, Locale.KOREAN));
+                // img List 설정
+                meetingDetailDto.setImgUrl(imgUrl);
 
 //             save Service 호출
-            defaultResponse
-                    = meetingService.saveMeeting(meetingDetailDto);
+                defaultResponse
+                        = meetingService.saveMeeting(meetingDetailDto, header);
 
-            return new ResponseEntity(defaultResponse, HttpStatus.OK);
-        } catch (Exception e){
-            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+                return new ResponseEntity(defaultResponse, HttpStatus.OK);
+            } catch (Exception e) {
+                return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
     }
 
     /* 상세 조회 부분 - Owner 받아오는 부분 */
     /* 모집 완료 - 진행중 */
     // data : meetingIdx 리턴
-    // TODO: Auth 부분
+    @Auth
     @PostMapping("/{meetingIdx}/complete")
     public ResponseEntity status(
             @RequestHeader(value = "Authorization", required = false) final String header,
@@ -116,15 +113,7 @@ public class MeetingController {
         DefaultResponse<Integer> defaultResponse;
 
         try {
-            //TODO: decode(token) 이용해서 Owner 갖고오기
-            // Auth를 통해 header에서 갖고온 user와
-            // meetingDto.getIdx가 같은지 비교, ser권한이 있는지 true => service 호출 false => No_Authentication
-
-            // 권한이 있는 경우
-//            DefaultResponse<MeetingDto> meetingDto = meetingService.findByIdx(meetingIdx, ownerDto);
-
-//            defaultResponse = meetingService.postComplete(meetingIdx, ownerDto);
-            defaultResponse = meetingService.postComplete(meetingIdx);
+            defaultResponse = meetingService.postComplete(meetingIdx, header);
             return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
@@ -132,18 +121,13 @@ public class MeetingController {
     }
 
     /* 찜하기 완료 */
-    //TODO: Auth 추가
-    // @Auth
-    // int는 게시판 번호 리턴
+    // Auth 필요 없음
     @PostMapping("/like")
     public ResponseEntity likeMeeting(
-            @RequestHeader(value = "Authorization", required = false) final String header,
             @RequestBody MeetingLikeDto meetingLikeDto) {
 
         DefaultResponse<Integer> defaultResponse;
         try {
-            // Auth 확인
-
             // meetingIdx 반환
             defaultResponse =  meetingService.postLikeState(meetingLikeDto);
             return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
@@ -174,8 +158,7 @@ public class MeetingController {
     }
 
     // 상세 조회 페이지
-    // TODO: PictureList 갖고오는거 구현(meetingPictures Entity 구현)
-    // TODO: 다른 페이지에서 실제로 Owner 받아오는 부분 구현해야함
+    // 추후 : PictureList 갖고오는거 구현(meetingPictures Entity 구현)
     @GetMapping("/{meetingIdx}")
     public ResponseEntity findAllByIdx(@RequestHeader(value = "Authorization", required = false) final String header,
                                        @PathVariable("meetingIdx") int meetingIdx){
@@ -189,7 +172,7 @@ public class MeetingController {
 //            OwnerDto ownerDto = new OwnerDto(5, "owner's profileImg", "닉네임", Gender.F);
 
             // 상세 조회 값 가져오기
-            defaultResponse = meetingService.findByIdx(meetingIdx, ownerDto);
+            defaultResponse = meetingService.findByIdx(meetingIdx, header);
 
             return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
 

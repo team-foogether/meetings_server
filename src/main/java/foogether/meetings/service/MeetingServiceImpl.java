@@ -17,6 +17,7 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.catalina.User;
+import org.omg.CORBA.UserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import javax.xml.ws.Response;
 import java.security.acl.Owner;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,31 +43,43 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Autowired
     private final UserClient userClient;
+
+    @Autowired
+    private final JwtService jwtService;
+
 //    @Autowired
 //    private final MeetingImgsRepository meetingImgsRepository;
 //    @Autowired
 //    FileUtils fileUtils;
 
 
-    /* User정보 조회 */
-
-
     /* 게시글 삭제 */
     @Transactional
     @Override
-    public DefaultResponse deleteMeeting(int meetingIdx) {
+    public DefaultResponse deleteMeeting(int meetingIdx, String header) {
         Meeting meeting = meetingRepository.findByIdx(meetingIdx);
+        if (meeting == null) {    // idx 없는데 수정 요청 한 거임
+            return DefaultResponse.res("success", ResponseMessage.FAIL_CREATE_CONTENT);
+        }
         MeetingDetailDto meetingDetailDto = new MeetingDetailDto(meeting);
-        meetingDetailDto.setActive(Active.UNACTIVE);
-        meetingRepository.save(meetingDetailDto.toEntity());
-        return DefaultResponse.res("success", ResponseMessage.DELETE_CONTENT);
+
+        if(jwtService.decode(header).getUserIdx() == meetingDetailDto.getOwnerIdx()){
+            meetingDetailDto.setActive(Active.UNACTIVE);
+            meetingRepository.save(meetingDetailDto.toEntity());
+            return DefaultResponse.res("success", ResponseMessage.DELETE_CONTENT);
+        }
+        else {
+            return DefaultResponse.res("fail", ResponseMessage.UNAUTHORIZED);
+        }
+
     }
 
-    /* 게시글 등록 및 수정*/
+    /* 게시글 작성 및 수정*/
     @Transactional
     @Override
     public DefaultResponse saveMeeting(
-            MeetingDetailDto meetingDetailDto) throws Exception {
+            MeetingDetailDto meetingDetailDto,
+            String header) throws Exception {
         // meetingDetailDto의 meetingIdx가지고 Img저장
 //        // 이미지 파일 처리
 //        // board.setFileInfoList(fileInfoList);
@@ -81,17 +95,20 @@ public class MeetingServiceImpl implements MeetingService {
             meetingRepository.save(meetingDetailDto.toEntity());
             return DefaultResponse.res("success", ResponseMessage.CREATE_CONTENT);
         } else {
-            Meeting meeting = meetingRepository.findByIdx(meetingDetailDto.getIdx());
-            if(meeting == null){    // idx 없는데 수정 요청 한 거임
-                return DefaultResponse.res("success", ResponseMessage.FAIL_CREATE_CONTENT);
+            if(jwtService.decode(header).getUserIdx() == meetingDetailDto.getIdx()) {
+                Meeting meeting = meetingRepository.findByIdx(meetingDetailDto.getIdx());
+                if (meeting == null) {    // idx 없는데 수정 요청 한 거임
+                    return DefaultResponse.res("success", ResponseMessage.FAIL_CREATE_CONTENT);
+                }
+                if (meeting.getActive() == Active.ACTIVE) {
+                    // 그저 save...
+                    meetingRepository.save(meetingDetailDto.toEntity());
+                    return DefaultResponse.res("success", ResponseMessage.UPDATE_CONTENT);
+                }
+                return DefaultResponse.res("fail", ResponseMessage.FAIL_UPDATE_CONTENT);
+            } else {
+                return DefaultResponse.res("fail", ResponseMessage.UNAUTHORIZED);
             }
-            if(meeting.getActive() == Active.ACTIVE) {
-                // 그저 save...
-                meetingRepository.save(meetingDetailDto.toEntity());
-                return DefaultResponse.res("success", ResponseMessage.UPDATE_CONTENT);
-            }
-            return DefaultResponse.res("fail", ResponseMessage.FAIL_UPDATE_CONTENT);
-
         }
     }
 
@@ -100,24 +117,28 @@ public class MeetingServiceImpl implements MeetingService {
     // 모집 완료 요청
     @Transactional
     @Override
-//    public DefaultResponse<Integer> postComplete(int meetingIdx, OwnerDto ownerDto) {
-    public DefaultResponse<Integer> postComplete(int meetingIdx) {
-        String token = "token";
-        ResponseEntity<DefaultResponse<UserResponseDto>> ownerDto = userClient.getUserInfo(token);
+    public DefaultResponse<Integer> postComplete(int meetingIdx, String header) {
         Meeting meeting = meetingRepository.findByIdx(meetingIdx);
         if(meeting == null || meeting.getActive().equals(Active.UNACTIVE)){ // UNACTIVE인 경우 반환
             return DefaultResponse.res("fail",
                     ResponseMessage.READ_ALL_BUT_ZERO);
         }
 
-        MeetingDetailDto meetingDetailDto = new MeetingDetailDto(meeting);
-        meetingDetailDto.setStatus(StatusInfo.COMPLETE);
-        meetingRepository.save(meetingDetailDto.toEntity());
+        // 권한이 있는지
+        if(jwtService.decode(header).getUserIdx() == meeting.getOwnerIdx()) {
 
-        // meetingIdx 반환
-        return DefaultResponse.res("success",
-                ResponseMessage.MEETING_COMPLETE,
-                meetingDetailDto.getIdx());
+
+            MeetingDetailDto meetingDetailDto = new MeetingDetailDto(meeting);
+            meetingDetailDto.setStatus(StatusInfo.COMPLETE);
+            meetingRepository.save(meetingDetailDto.toEntity());
+
+            // meetingIdx 반환
+            return DefaultResponse.res("success",
+                    ResponseMessage.MEETING_COMPLETE,
+                    meetingDetailDto.getIdx());
+        } else {
+            return DefaultResponse.res("fail", ResponseMessage.UNAUTHORIZED);
+        }
     }
 
     // 좋아요 요청 및 취소
@@ -166,10 +187,10 @@ public class MeetingServiceImpl implements MeetingService {
         for(MeetingMember meetingMember : meetingMembers){
             if(meetingMember.getOwnerIdx() == meetingMemberDto.getOwnerIdx()){
                 log.info(" meetingMember Idx >>> " + meetingMember.getIdx());
-                log.info(" meetingMember Gender >>> " + meetingMember.getGender());
+//                log.info(" meetingMember Gender >>> " + meetingMember.getGender());
                 log.info(" meetingMember OwnerId >>> " + meetingMember.getOwnerIdx());
                 meetingMembers.remove(meetingMember);
-                log.info(" meetingMember OwnerId >>> " + meetingMember.getOwnerIdx());
+
                 // member 추가
                 List<MeetingMemberDto> meetingMemberList = meetingMembers.stream().map(
                         meetingMember1 -> new MeetingMemberDto(meetingMember1)
@@ -211,11 +232,20 @@ public class MeetingServiceImpl implements MeetingService {
 
     // 참여자 수 조회
     @Override
+//    public int findMemberCount(int meetingIdx, Gender gender) {
     public int findMemberCount(int meetingIdx, Gender gender) {
-            int number = 0;
-            List<MeetingMember> meetingMemberList = meetingRepository.findByIdx(meetingIdx).getMemberList();
-            for(MeetingMember meetingMember : meetingMemberList){
-                if(meetingMember.getGender() == gender){
+
+        int number = 0;
+        List<MeetingMember> meetingMembers = meetingRepository.findByIdx(meetingIdx).getMemberList();
+        List<Integer> memberIdxList = new ArrayList<>();
+        for(MeetingMember meetingMember : meetingMembers) {
+            memberIdxList.add(meetingMember.getOwnerIdx());
+        }
+
+        List<UserResponseDto> memberList =
+                userClient.getUserList(memberIdxList).getBody().getData();
+            for(UserResponseDto userResponseDto : memberList){
+                if(userResponseDto.getGender() == gender){
                     number++;
                 }
             }
@@ -225,52 +255,87 @@ public class MeetingServiceImpl implements MeetingService {
 
     // 특정 게시물 조회
     @Override
-    public DefaultResponse<MeetingDetailDto> findByIdx(int meetingIdx, OwnerDto ownerDto) throws Exception {
+    public DefaultResponse<MeetingDetailDto> findByIdx(int meetingIdx, String header) throws Exception {
         try {
             Meeting meeting = meetingRepository.findByIdxAndActive(meetingIdx, Active.ACTIVE);
             // meeting 정보가 없으면
             if (meeting == null) {
                 return DefaultResponse.res("fail", ResponseMessage.NOT_FOUND_LIST);
             }
-
             MeetingDetailDto meetingDetailDto = new MeetingDetailDto(meeting);
 
             log.info("meetingIdx >>> " + meetingDetailDto.getIdx());
             log.info("ownerIdx of meetingIdx >>> " + meetingDetailDto.getOwnerIdx());
-            log.info("ownerIdx >>> " + ownerDto.getOwnerIdx());
+
+            // user 정보 가져오기
+            // 내 정보 가져옴
+            int myIdx = jwtService.decode(header).getUserIdx();
+            ResponseEntity<DefaultResponse<UserResponseDto>>
+            myInfo = userClient.getUserInfo(myIdx);
+            UserResponseDto myDto = new UserResponseDto(myInfo.getBody().getData());
 
             // owner인지 확인
-            if(ownerDto.getOwnerIdx() == meetingDetailDto.getOwnerIdx()){
+            if(myDto.getIdx() == meetingDetailDto.getOwnerIdx()){
                 meetingDetailDto.setAuth(true);
             }
 
             // like했는지 확인
-            MeetingLike meetingLike = meetingLikeRepository.findByMeetingIdxAndOwnerIdx(meetingIdx, ownerDto.getOwnerIdx());
+            MeetingLike meetingLike = meetingLikeRepository.findByMeetingIdxAndOwnerIdx(meetingIdx, myDto.getIdx());
 
             if(meetingLike != null){
                 meetingDetailDto.setLike(true);
             }
 
-            //참여자 수
-            meetingDetailDto.setFemNum(findMemberCount(meetingDetailDto.getIdx(),Gender.FEMALE));
-            meetingDetailDto.setManNum(findMemberCount(meetingDetailDto.getIdx(), Gender.MALE));
 
+            // 참석자 리스트 확인
             List<MeetingMember> meetingMembers = meeting.getMemberList();
+            List<Integer> memberIdxList = new ArrayList<>();
+            for(MeetingMember meetingMember : meetingMembers) {
+                memberIdxList.add(meetingMember.getOwnerIdx());
+            }
+
+            List<UserResponseDto> memberList =
+                    userClient.getUserList(memberIdxList).getBody().getData();
+
             //참여 여부
-            for(MeetingMember meetingMember : meetingMembers){
-                if(meetingMember.getOwnerIdx() == ownerDto.getOwnerIdx()){
+            for(UserResponseDto userResponseDto : memberList) {
+                if(userResponseDto.getIdx() == myDto.getIdx()){
                     meetingDetailDto.setJoin(true);
                 }
             }
-            if(meetingMembers.size() != 0) {
-                meetingDetailDto.setMeetingMemberDtoList(meetingMembers.stream().map(meetingMember ->
-                        {
+//            for(MeetingMember meetingMember : meetingMembers){
+//                // meeting member의 userIdx
+//                if(meetingMember.getOwnerIdx() == myDto.getIdx()){
+//                    meetingDetailDto.setJoin(true);
+//                }
+//            }
+
+            // memberList.getData().get(int) = UserResponseDto
+            // meetingDetailDto에 참석자 setting
+            if(memberList.size() != 0) {
+                meetingDetailDto.setMeetingMemberDtoList(memberList.stream().map(
+                        meetingMember -> {
                             MeetingMemberDto meetingMemberDto = new MeetingMemberDto(meetingMember);
                             meetingMemberDto.setMeetingIdx(meetingIdx);
                             return meetingMemberDto;
                         }
                 ).collect(Collectors.toList()));
             }
+//            if(meetingMembers.size() != 0) {
+//                meetingDetailDto.setMeetingMemberDtoList(meetingMembers.stream().map(meetingMember ->
+//                        {
+//                            MeetingMemberDto meetingMemberDto = new MeetingMemberDto(meetingMember);
+//                            meetingMemberDto.setMeetingIdx(meetingIdx);
+//                            return meetingMemberDto;
+//                        }
+//                ).collect(Collectors.toList()));
+//            }
+
+            //참여자 수
+            meetingDetailDto.setFemNum(findMemberCount(meetingDetailDto.getIdx(), Gender.FEMALE));
+            meetingDetailDto.setManNum(findMemberCount(meetingDetailDto.getIdx(), Gender.MALE));
+
+
 
 
             // 사진 정보 가져오기
@@ -283,10 +348,15 @@ public class MeetingServiceImpl implements MeetingService {
 //
 //            meetingDetailDto.setImgUrl(meetingImgsList);
 
+            // meetingDetailDto의 owner정보 가져옴
+            ResponseEntity<DefaultResponse<UserResponseDto>>
+                    user = userClient.getUserInfo(meetingDetailDto.getOwnerIdx());
+            UserResponseDto ownerInfo = new UserResponseDto(user.getBody().getData());
+
             // 개최자 정보 저장
-            meetingDetailDto.setOwnerNickname(ownerDto.getOwnerNickname());
-            meetingDetailDto.setOwnerProfileImg(ownerDto.getOwnerProfileImg());
-            meetingDetailDto.setOwnerGender(ownerDto.getOwnerGener());
+            meetingDetailDto.setOwnerNickname(ownerInfo.getNickname());
+            meetingDetailDto.setOwnerProfileImg(ownerInfo.getProfileImg());
+            meetingDetailDto.setOwnerGender(ownerInfo.getGender());
 
 
             return DefaultResponse.res("success", 1, ResponseMessage.READ_CONTENT,
