@@ -42,10 +42,6 @@ public class MeetingServiceImpl implements MeetingService {
     @Autowired
     private final JwtService jwtService;
 
-//    @Autowired
-//    private final MeetingImgsRepository meetingImgsRepository;
-//    @Autowired
-//    FileUtils fileUtils;
 
 
     /* 게시글 삭제 */
@@ -108,7 +104,7 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
 
-    /* 모이자 상세 페이지 - 완료, Auth부분 추가 */
+    /* 모이자 상세 페이지 */
     // 모집 완료 요청
     @Transactional
     @Override
@@ -174,66 +170,6 @@ public class MeetingServiceImpl implements MeetingService {
     }
 
     // 참여 요청 및 취소
-//    @Override
-//    @Transactional
-//    public DefaultResponse<Integer> postJoinState(MeetingMemberDto meetingMemberDto, String header) {
-//        // meeting Idx 가 ACTIVE인지 확인
-//        Meeting meeting = meetingRepository.findByIdx(meetingMemberDto.getMeetingIdx());
-//        if(meeting == null || meeting.getActive().equals(Active.UNACTIVE)){ // UNACTIVE인 경우 반환
-//            return DefaultResponse.res("fail",
-//                    ResponseMessage.READ_ALL_BUT_ZERO);
-//        }
-//
-//
-//        List<MeetingMember> meetingMembers = meeting.getMemberList();
-//        // MemberList 중 ownerIdx가 맞는게 있는지 찾아라
-//        for(MeetingMember meetingMember : meetingMembers){
-//            if(meetingMember.getOwnerIdx() == meetingMemberDto.getOwnerIdx()){
-//                log.info(" meetingMember Idx >>> " + meetingMember.getIdx());
-////                log.info(" meetingMember Gender >>> " + meetingMember.getGender());
-//                log.info(" meetingMember OwnerId >>> " + meetingMember.getOwnerIdx());
-//                meetingMembers.remove(meetingMember);
-//
-//                // member 추가
-//                List<MeetingMemberDto> meetingMemberList = meetingMembers.stream().map(
-//                        meetingMember1 -> new MeetingMemberDto(meetingMember1)
-//                ).collect(Collectors.toList());
-//                MeetingDetailDto meetingDetailDto = new MeetingDetailDto(meeting);
-//                meetingDetailDto.setMeetingMemberList(meetingMemberList);
-//
-////                meetingRepository.save(meetingDetailDto.toEntity());
-//                meetingMemberRepository.deleteByIdx(meetingMember.getIdx());
-//
-//                // meetingIdx 반환
-//                return DefaultResponse.res("success",
-//                        ResponseMessage.OUT_MEETING,
-//                        meetingMemberDto.getMeetingIdx());
-//            }
-//        }
-//
-//
-////            meetingMemberRepository.delete(meetingMember);
-//
-//        // member 추가
-//        List<MeetingMemberDto> meetingMemberList = meetingMembers.stream().map(
-//                MeetingMemberDto::new
-//        ).collect(Collectors.toList());
-//        meetingMemberList.add(meetingMemberDto);
-//
-//        MeetingDetailDto meetingDetailDto = new MeetingDetailDto(meeting);
-//        meetingDetailDto.setMeetingMemberList(meetingMemberList);
-//
-//
-//        meetingRepository.save(meetingDetailDto.toEntity());
-//        // meetingIdx 반환
-//        return DefaultResponse.res("success",
-//                ResponseMessage.JOIN_MEETING,
-//                meetingMemberDto.getMeetingIdx());
-//
-//
-//    }
-
-    // 참여 요청 및 취소
     @Override
     @Transactional
     public DefaultResponse<Integer> postJoinState(int meetingIdx, String header) {
@@ -250,9 +186,6 @@ public class MeetingServiceImpl implements MeetingService {
         // MemberList 중 ownerIdx가 맞는게 있는지 찾아라
         for(MeetingMember meetingMember : meetingMembers){
             if(meetingMember.getOwnerIdx() == ownerIdx){
-                log.info(" meetingMember Idx >>> " + meetingMember.getIdx());
-//                log.info(" meetingMember Gender >>> " + meetingMember.getGender());
-                log.info(" meetingMember OwnerId >>> " + meetingMember.getOwnerIdx());
                 meetingMembers.remove(meetingMember);
 
                 // member 추가
@@ -262,7 +195,6 @@ public class MeetingServiceImpl implements MeetingService {
                 MeetingDetailDto meetingDetailDto = new MeetingDetailDto(meeting);
                 meetingDetailDto.setMeetingMemberList(meetingMemberList);
 
-//                meetingRepository.save(meetingDetailDto.toEntity());
                 meetingMemberRepository.deleteByIdx(meetingMember.getIdx());
 
                 // meetingIdx 반환
@@ -315,7 +247,6 @@ public class MeetingServiceImpl implements MeetingService {
                 }
             }
             return number;
-//            return meetingMemberRepository.countAllByMeetingIdxAndGender(meetingIdx, gender);
     }
 
     // 특정 게시물 조회
@@ -368,14 +299,7 @@ public class MeetingServiceImpl implements MeetingService {
                     meetingDetailDto.setJoin(true);
                 }
             }
-//            for(MeetingMember meetingMember : meetingMembers){
-//                // meeting member의 userIdx
-//                if(meetingMember.getOwnerIdx() == myDto.getIdx()){
-//                    meetingDetailDto.setJoin(true);
-//                }
-//            }
 
-            // memberList.getData().get(int) = UserResponseDto
             // meetingDetailDto에 참석자 setting
             if(memberList.size() != 0) {
                 meetingDetailDto.setMeetingMemberList(memberList.stream().map(
@@ -386,15 +310,6 @@ public class MeetingServiceImpl implements MeetingService {
                         }
                 ).collect(Collectors.toList()));
             }
-//            if(meetingMembers.size() != 0) {
-//                meetingDetailDto.setMeetingMemberDtoList(meetingMembers.stream().map(meetingMember ->
-//                        {
-//                            MeetingMemberDto meetingMemberDto = new MeetingMemberDto(meetingMember);
-//                            meetingMemberDto.setMeetingIdx(meetingIdx);
-//                            return meetingMemberDto;
-//                        }
-//                ).collect(Collectors.toList()));
-//            }
 
             //참여자 수
             meetingDetailDto.setFemNum(findMemberCount(meetingDetailDto.getIdx(), Gender.FEMALE));
@@ -430,19 +345,6 @@ public class MeetingServiceImpl implements MeetingService {
             return DefaultResponse.res("fail", ResponseMessage.INTERNAL_SERVER_ERROR);
         }
     }
-//
-//    // 이미지리스트 조회 //TODO: 지워야 할 수도
-//    @Override
-//    public List<MeetingImgsDto> findImgsByMeetingIdx(Meeting meeting, int meetingIdx) {
-////        List<MeetingImgs> meetingImgs = meetingImgsRepository.findAllByMeetingIdx(
-////                meetingIdx
-////        );
-//        List<MeetingImgs> meetingImgs = meeting.getFileInfoList();
-//
-//        return meetingImgs.stream().map(
-//                meetingImg -> new MeetingImgsDto(meetingImg)
-//        ).collect(Collectors.toList());
-//    }
 
 
     /* 모이자 메인 페이지 - 완료 */
