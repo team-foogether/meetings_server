@@ -129,7 +129,7 @@ public class MeetingController {
             @PathVariable("meetingIdx") int meetingIdx) {
 
         DefaultResponse<Integer> defaultResponse;
-        if(jwtService.decode(header).getUserIdx() != -1) {
+        if(!jwtService.checkAuth(header, -1)) {
             try {
                 // meetingIdx 반환
                 defaultResponse = meetingService.postLikeState(meetingIdx, header);
@@ -150,7 +150,7 @@ public class MeetingController {
 
         DefaultResponse<Integer> defaultResponse;
 
-        if(jwtService.decode(header).getUserIdx() != -1) {
+        if(!jwtService.checkAuth(header, -1)) {
             try {
                 // Auth 확인
 

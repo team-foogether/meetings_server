@@ -54,7 +54,7 @@ public class MeetingServiceImpl implements MeetingService {
         }
         MeetingDetailDto meetingDetailDto = new MeetingDetailDto(meeting);
 
-        if(jwtService.decode(header).getUserIdx() == meetingDetailDto.getOwnerIdx()){
+        if(jwtService.checkAuth(header, meetingDetailDto.getOwnerIdx())){
             meetingDetailDto.setActive(Active.UNACTIVE);
             meetingRepository.save(meetingDetailDto.toEntity());
             return DefaultResponse.res("success", ResponseMessage.DELETE_CONTENT);
@@ -86,7 +86,7 @@ public class MeetingServiceImpl implements MeetingService {
             meetingRepository.save(meetingDetailDto.toEntity());
             return DefaultResponse.res("success", ResponseMessage.CREATE_CONTENT);
         } else {
-            if(jwtService.decode(header).getUserIdx() == meetingDetailDto.getIdx()) {
+            if(jwtService.checkAuth(header, meetingDetailDto.getIdx())) {
                 Meeting meeting = meetingRepository.findByIdx(meetingDetailDto.getIdx());
                 if (meeting == null) {    // idx 없는데 수정 요청 한 거임
                     return DefaultResponse.res("success", ResponseMessage.FAIL_CREATE_CONTENT);
@@ -105,7 +105,8 @@ public class MeetingServiceImpl implements MeetingService {
 
 
     /* 모이자 상세 페이지 */
-    // 모집 완료 요청
+    // 모집 완료
+    // 요청
     @Transactional
     @Override
     public DefaultResponse<Integer> postComplete(int meetingIdx, String header) {
@@ -116,7 +117,7 @@ public class MeetingServiceImpl implements MeetingService {
         }
 
         // 권한이 있는지
-        if(jwtService.decode(header).getUserIdx() == meeting.getOwnerIdx()) {
+        if(jwtService.checkAuth(header, meeting.getOwnerIdx())) {
 
 
             MeetingDetailDto meetingDetailDto = new MeetingDetailDto(meeting);
