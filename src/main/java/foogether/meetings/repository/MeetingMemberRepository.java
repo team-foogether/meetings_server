@@ -1,12 +1,16 @@
 package foogether.meetings.repository;
 
+import foogether.meetings.domain.Entity.Meeting;
 import foogether.meetings.domain.Entity.MeetingMember;
 import foogether.meetings.domain.Gender;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface MeetingMemberRepository extends JpaRepository<MeetingMember, Integer> {
+    List<MeetingMember> findAllByOwnerIdx(int ownerIdx);
     void deleteByIdx(int meetingMemberIdx);
     //참여자인지 조회
 //    int countByMeetingIdxAndOwnerIdx(int meetingIdx, int ownerIdx);

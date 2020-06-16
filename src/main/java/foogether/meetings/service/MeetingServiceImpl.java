@@ -42,10 +42,27 @@ public class MeetingServiceImpl implements MeetingService {
     @Autowired
     private final JwtService jwtService;
 
-    /* 내가 참여한 모임 중 완료된 모임 */
-    /* 내가 참여한 모임 중 완료되지 않은 모임 */
+    /* mypage - 모이자 내가 참여한 게시글 조회 */
+    @Override
+    public DefaultResponse<List<MeetingDto>> myJoinMeetingList(String header) {
+        int ownerIdx = jwtService.decode(header).getUserIdx();
+        if(ownerIdx == -1) {
+            return DefaultResponse.res("fail", ResponseMessage.UNAUTHORIZED);
+        }
+        List<MeetingMember> meetingMemberList = meetingMemberRepository.findAllByOwnerIdx(ownerIdx);
+//        List<Integer> meetingIdxList = new ArrayList<>();
+        List<MeetingDto> meetingDtoList = new ArrayList<>();
+        //TODO:
+        for(MeetingMember meetingMember : meetingMemberList) {
 
-    /* 모이자 내가 쓴 게시글 조회 */
+            meetingDtoList.add(new MeetingDto(meetingMember.getMeeting()));
+//            meetingIdxList.add(meetingMember.get)
+        }
+        return DefaultResponse.res("success", ResponseMessage.READ_ALL_CONTENTS,
+                meetingDtoList);
+    }
+
+    /* mypage - 모이자 내가 쓴 게시글 조회 */
     @Override
     public DefaultResponse<List<MeetingDto>> myMeetingList(String header) {
         int ownerIdx = jwtService.decode(header).getUserIdx();

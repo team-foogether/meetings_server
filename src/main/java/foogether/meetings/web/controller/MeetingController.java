@@ -101,23 +101,23 @@ public class MeetingController {
                 return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
             }
     }
+    /* 내가 참여한 게시글 조회 */
+//    @Auth
+//    @GetMapping("/mypage")
+//    public ResponseEntity myMeetingList(
+//            @RequestHeader(value = "Authorization", required = false) final String header)
+//    {
+//
+//        DefaultResponse<List<MeetingDto>> defaultResponse;
+//
+//        try {
+//            defaultResponse = meetingService.myMeetingList(header);
+//            return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
+//        } catch (Exception e) {
+//            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 
-    /* 내가 작성한 글 조회 */
-    @Auth
-    @GetMapping("/mypage")
-    public ResponseEntity myMeetingList(
-            @RequestHeader(value = "Authorization", required = false) final String header)
-    {
-
-        DefaultResponse<List<MeetingDto>> defaultResponse;
-
-        try {
-            defaultResponse = meetingService.myMeetingList(header);
-            return new ResponseEntity<>(defaultResponse, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(FAIL_DEFAULT_RES, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 
     /* 상세 조회 부분 - Owner 받아오는 부분 */
     /* 모집 완료 - 진행중 */

@@ -21,6 +21,11 @@ public class MeetingMember {
     @Column(name="owner_idx")
     private int ownerIdx; // user_id
 
+
+    @ManyToOne
+    @JoinColumn(name = "meeting_idx")
+    private Meeting meeting;
+
 //    @Column(name="meeting_idx")
 //    private int meetingIdx;
 
@@ -32,7 +37,7 @@ public class MeetingMember {
 //    public MeetingMember(int ownerIdx, Gender gender, int meetingIdx) {
     public MeetingMember(int ownerIdx, int meetingIdx) {
         this.idx = idx;
-//        this.meetingIdx = meetingIdx;
+//        this.meeting = meetingIdx;
         this.ownerIdx = ownerIdx;
 //        this.gender = gender;
     }
