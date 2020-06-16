@@ -42,6 +42,28 @@ public class MeetingServiceImpl implements MeetingService {
     @Autowired
     private final JwtService jwtService;
 
+    /* 내가 참여한 모임 중 완료된 모임 */
+    /* 내가 참여한 모임 중 완료되지 않은 모임 */
+
+    /* 모이자 내가 쓴 게시글 조회 */
+    @Override
+    public DefaultResponse<List<MeetingDto>> myMeetingList(String header) {
+        int ownerIdx = jwtService.decode(header).getUserIdx();
+        if(ownerIdx == -1) {
+            return DefaultResponse.res("fail", ResponseMessage.UNAUTHORIZED);
+        }
+        List<Meeting> meetingList = meetingRepository.findAllByOwnerIdx(ownerIdx);
+        if(meetingList.size() == 0) {
+            return DefaultResponse.res("success", ResponseMessage.READ_ALL_BUT_ZERO);
+        }
+        List<MeetingDto> meetingDtoList = new ArrayList<>();
+        for(Meeting meeting : meetingList){
+            meetingDtoList.add(new MeetingDto(meeting));
+        }
+
+        return DefaultResponse.res("success", ResponseMessage.READ_ALL_CONTENTS,
+                meetingDtoList);
+    }
 
 
     /* 게시글 삭제 */
@@ -102,7 +124,6 @@ public class MeetingServiceImpl implements MeetingService {
             }
         }
     }
-
 
     /* 모이자 상세 페이지 */
     // 모집 완료

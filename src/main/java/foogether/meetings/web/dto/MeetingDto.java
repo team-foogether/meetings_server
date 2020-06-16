@@ -4,6 +4,7 @@ import foogether.meetings.domain.*;
 import foogether.meetings.domain.Entity.Meeting;
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
@@ -11,8 +12,8 @@ import java.time.LocalTime;
 import java.util.List;
 
 @Data
+@NoArgsConstructor
 public class MeetingDto {
-    // TODO: MeetingDetail Dto에 따라 변수 타입 바꾸기
     // meetingIdx를 공유
     private int idx;
 
@@ -24,14 +25,11 @@ public class MeetingDto {
     private String imgUrl;
 
     // DateInfo
-//    private DateInfo endDate;
     private LocalDate endDate;
     private LocalTime endTime;
     private String endDayOfWeek;
 
     private String title;
-//    private String content;
-//    private Address address;
     private String firstAddr;
     private String secondAddr;
     private String thirdAddr;

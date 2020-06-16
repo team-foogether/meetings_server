@@ -11,6 +11,8 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import java.util.List;
 
 public interface MeetingService {
+    /* 내가 작성한 게시글 조회 */
+    DefaultResponse<List<MeetingDto>> myMeetingList(String header);
 
     /* 게시글 삭제 */
     DefaultResponse deleteMeeting(int meetingIdx, String header);

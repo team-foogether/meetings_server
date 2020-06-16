@@ -63,7 +63,6 @@ public class AuthAspect {
         if (token == null) {
             return RES_RESPONSE_ENTITY;
         } else {
-//            final User user = userRepository.findByIdx(token.getUserIdx());
             UserResponseDto userResponseDto;
             try {
                 final ResponseEntity<DefaultResponse<UserResponseDto>> userInfo

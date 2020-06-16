@@ -36,9 +36,7 @@ public class MeetingMemberDto {
     // Repository에서 entity -> dto로 바꿔주는 작업
     public MeetingMemberDto(MeetingMember entity) {
         this.idx = entity.getIdx();
-//        this.meetingIdx = entity.getMeetingIdx();
         this.ownerIdx = entity.getOwnerIdx();
-//        this.gender = entity.getGender();
     }
 
     // dto -> Entity
@@ -46,7 +44,6 @@ public class MeetingMemberDto {
         return MeetingMember.builder()
                 .idx(this.idx)
                 .meetingIdx(this.meetingIdx)
-//                .gender(this.gender)
                 .ownerIdx(this.ownerIdx)
                 .build();
     }

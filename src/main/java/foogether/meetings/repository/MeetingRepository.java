@@ -22,6 +22,12 @@ public interface MeetingRepository extends JpaRepository<Meeting, Integer> {
 //    void deleteMeetingMemberListByOwnerIdx(int ownerIdx);
 //    int countByMemberList_AndOwnerIdx(List<MeetingMember> memberList, int ownerIdx);
 
+    /* 내가 참여한 모임 중 완료된 모임 */
+    /* 내가 참여한 모임 중 완료되지 않은 모임 - meetingMemberList로 봐야할듯 */
+
+    /* 모이자 내가쓴 게시글 조회 */
+    List<Meeting> findAllByOwnerIdx(int ownerIdx);
+
     /* 상세 조회 */
     // 특정 게시물의 삭제여부 조회
     Meeting findByIdx(int meetingIdx);
